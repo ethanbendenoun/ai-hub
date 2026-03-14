@@ -1,65 +1,203 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Zap,
+  Newspaper,
+  BookOpen,
+  ArrowRight,
+  Flame,
+  Bot,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
+import ArticleCard from "@/components/news/ArticleCard";
+import GuideCard from "@/components/guides/GuideCard";
+import { getArticles } from "@/lib/rss";
+import { getAllGuides } from "@/lib/guides";
 
-export default function Home() {
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  let articles: Awaited<ReturnType<typeof getArticles>> = [];
+  try {
+    articles = await getArticles();
+  } catch {
+    articles = [];
+  }
+  const guides = getAllGuides();
+  const impactArticles = articles.filter((a) => a.isImpact).slice(0, 3);
+  const latestArticles = articles.slice(0, 6);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      {/* Hero Section */}
+      <section className="relative py-16 sm:py-24">
+        {/* Background glow */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="h-[400px] w-[600px] rounded-full bg-accent/5 blur-3xl" />
+        </div>
+
+        <div className="relative text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-4 py-1.5 text-sm font-medium text-accent">
+            <span className="pulse-dot h-2 w-2 rounded-full bg-accent" />
+            Veille IA en temps reel
+          </div>
+
+          <h1 className="mb-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+            Restez en avance sur{" "}
+            <span className="gradient-text">la revolution IA</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
+            Presse, Flash, Decouverte &mdash; Toute l&apos;actu IA analysee,
+            les meilleurs outils decryptes, et des guides pour exploiter les
+            agents IA a leur plein potentiel.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/presse"
+              className="flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-semibold text-white shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
+            >
+              <Newspaper size={18} />
+              Explorer la Presse IA
+            </Link>
+            <Link
+              href="/decouverte"
+              className="flex items-center gap-2 rounded-xl border border-card-border bg-card px-6 py-3 font-semibold transition-all hover:border-accent/30 hover:-translate-y-0.5"
+            >
+              <BookOpen size={18} />
+              Guides &amp; Outils
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </section>
+
+      {/* Stats Bar */}
+      <section className="mb-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {[
+          {
+            icon: <Newspaper size={20} />,
+            value: `${articles.length}+`,
+            label: "Articles",
+          },
+          {
+            icon: <Flame size={20} />,
+            value: `${impactArticles.length}`,
+            label: "Impacts forts",
+          },
+          {
+            icon: <BookOpen size={20} />,
+            value: `${guides.length}`,
+            label: "Guides",
+          },
+          {
+            icon: <Bot size={20} />,
+            value: "24/7",
+            label: "Veille auto",
+          },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="flex flex-col items-center gap-2 rounded-xl border border-card-border bg-card p-4 text-center"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="text-accent">{stat.icon}</div>
+            <div className="text-2xl font-bold">{stat.value}</div>
+            <div className="text-xs text-muted">{stat.label}</div>
+          </div>
+        ))}
+      </section>
+
+      {/* Impact News */}
+      {impactArticles.length > 0 && (
+        <section className="mb-16">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/10">
+                <Flame size={20} className="text-warning" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">A ne pas manquer</h2>
+                <p className="text-sm text-muted">Les news a fort impact</p>
+              </div>
+            </div>
+            <Link
+              href="/flash"
+              className="flex items-center gap-1 text-sm font-medium text-accent hover:underline"
+            >
+              Voir les Flash <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {impactArticles.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Latest News */}
+      <section className="mb-16">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+              <Sparkles size={20} className="text-accent" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Dernieres actualites</h2>
+              <p className="text-sm text-muted">Flux RSS en temps reel</p>
+            </div>
+          </div>
+          <Link
+            href="/presse"
+            className="flex items-center gap-1 text-sm font-medium text-accent hover:underline"
           >
-            Documentation
-          </a>
+            Toute la presse <ArrowRight size={14} />
+          </Link>
         </div>
-      </main>
+        {latestArticles.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {latestArticles.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-card-border bg-card p-8 text-center text-muted">
+            <Zap size={32} className="mx-auto mb-3 text-accent" />
+            <p>Chargement des actualites en cours...</p>
+            <p className="mt-1 text-xs">
+              Les flux RSS seront disponibles au prochain refresh.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Guides Section */}
+      <section className="mb-16">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10">
+              <TrendingUp size={20} className="text-success" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Maitrisez vos outils IA</h2>
+              <p className="text-sm text-muted">
+                Guides, tutos et comparatifs
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/decouverte"
+            className="flex items-center gap-1 text-sm font-medium text-accent hover:underline"
+          >
+            Tous les guides <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {guides.slice(0, 6).map((guide) => (
+            <GuideCard key={guide.slug} guide={guide} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
