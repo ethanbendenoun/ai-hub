@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | AI Hub",
   },
   description:
-    "Suivez l'actualite IA, decouvrez les meilleurs outils et apprenez a exploiter les agents IA pour etre plus efficace.",
+    "Suivez l'actualite IA, decouvrez les meilleurs outils et apprenez a exploiter les agents IA.",
 };
 
 export default function RootLayout({
@@ -31,20 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {/* Floating particles (cyberpunk ambiance) */}
-          <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden dark:block hidden">
-            <div className="particle" />
-            <div className="particle" />
-            <div className="particle" />
-            <div className="particle" />
-            <div className="particle" />
-          </div>
-
-          <div className="relative z-10 flex min-h-screen flex-col">
+          <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />

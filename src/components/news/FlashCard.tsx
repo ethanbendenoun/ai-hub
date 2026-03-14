@@ -14,15 +14,14 @@ function formatDate(dateStr: string): string {
 }
 
 export default function FlashCard({ article, index }: { article: Article; index: number }) {
-  // Cyberpunk color schemes
-  const schemes = [
-    { border: "border-neon-cyan/30", bg: "from-neon-cyan/5 to-accent/5", glow: "shadow-[0_0_20px_rgba(0,240,255,0.05)]" },
-    { border: "border-accent/30", bg: "from-accent/5 to-neon-pink/5", glow: "shadow-[0_0_20px_rgba(167,139,250,0.05)]" },
-    { border: "border-neon-pink/30", bg: "from-neon-pink/5 to-accent/5", glow: "shadow-[0_0_20px_rgba(255,0,229,0.05)]" },
-    { border: "border-neon-green/30", bg: "from-neon-green/5 to-neon-cyan/5", glow: "shadow-[0_0_20px_rgba(57,255,20,0.05)]" },
-    { border: "border-warning/30", bg: "from-warning/5 to-accent/5", glow: "shadow-[0_0_20px_rgba(245,158,11,0.05)]" },
+  const colors = [
+    { bg: "from-violet-500/8 to-blue-500/8", border: "border-violet-200 dark:border-violet-500/15" },
+    { bg: "from-blue-500/8 to-cyan-500/8", border: "border-blue-200 dark:border-blue-500/15" },
+    { bg: "from-emerald-500/8 to-teal-500/8", border: "border-emerald-200 dark:border-emerald-500/15" },
+    { bg: "from-orange-500/8 to-amber-500/8", border: "border-orange-200 dark:border-orange-500/15" },
+    { bg: "from-pink-500/8 to-rose-500/8", border: "border-pink-200 dark:border-pink-500/15" },
   ];
-  const scheme = schemes[index % schemes.length];
+  const color = colors[index % colors.length];
   const displaySummary = article.summaryFr || article.summary;
 
   return (
@@ -30,34 +29,32 @@ export default function FlashCard({ article, index }: { article: Article; index:
       href={article.url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`card-hover group relative overflow-hidden rounded-xl border bg-gradient-to-br p-6 backdrop-blur-sm ${scheme.border} ${scheme.bg} ${scheme.glow}`}
+      className={`card-hover group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-6 ${color.border} ${color.bg}`}
     >
-      {/* Corner accent */}
-      <div className="absolute top-0 right-0 h-20 w-20 bg-gradient-to-bl from-accent/10 to-transparent" />
-
-      {/* Flash indicator */}
+      {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-neon-cyan/20 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-            <Zap size={14} className="text-neon-cyan" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10">
+            <Zap size={15} className="text-accent" />
           </div>
-          <span className="font-mono text-xs font-medium text-muted">
-            FLASH &bull; {article.source}
-          </span>
-          {article.region === "france" && <span className="text-xs">🇫🇷</span>}
+          <div>
+            <span className="text-xs font-semibold">FLASH</span>
+            <span className="text-xs text-muted"> · {article.source}</span>
+            {article.region === "france" && <span className="ml-1 text-xs">🇫🇷</span>}
+          </div>
         </div>
-        <span className="font-mono text-xs text-muted">{formatDate(article.publishedAt)}</span>
+        <span className="text-xs text-muted">{formatDate(article.publishedAt)}</span>
       </div>
 
       {/* Title */}
-      <h3 className="mb-3 text-lg font-bold leading-tight group-hover:text-neon-cyan transition-colors">
+      <h3 className="mb-3 text-lg font-bold leading-tight group-hover:text-accent transition-colors">
         {article.title}
       </h3>
 
-      {/* AI Summary in French */}
-      <div className="mb-4 rounded-lg border border-card-border/30 bg-background/50 p-4 backdrop-blur-sm">
-        <div className="mb-2 flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-neon-cyan">
-          <Zap size={12} />
+      {/* French summary */}
+      <div className="mb-4 rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-card-border/50">
+        <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
+          <Zap size={11} />
           Resume FR
         </div>
         <p className="text-sm leading-relaxed text-foreground/80">
@@ -65,27 +62,18 @@ export default function FlashCard({ article, index }: { article: Article; index:
         </p>
       </div>
 
-      {/* Tags + like */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Tags */}
+      <div className="flex flex-wrap items-center gap-1.5">
         {article.isImpact && (
-          <Badge variant="impact">
-            <Flame size={12} />
-            Fort Impact
-          </Badge>
+          <Badge variant="impact"><Flame size={11} /> Fort Impact</Badge>
         )}
         {article.categories.slice(0, 2).map((catId) => {
           const cat = CATEGORIES.find((c) => c.id === catId);
-          return cat ? (
-            <Badge key={catId} variant="cyber">{cat.label}</Badge>
-          ) : null;
+          return cat ? <Badge key={catId} variant="accent">{cat.label}</Badge> : null;
         })}
         <div className="ml-auto flex items-center gap-1">
-          <LikeButtons
-            url={article.url}
-            categories={article.categories}
-            source={article.source}
-          />
-          <span className="flex items-center gap-1 font-mono text-xs font-medium text-neon-cyan opacity-0 transition-opacity group-hover:opacity-100">
+          <LikeButtons url={article.url} categories={article.categories} source={article.source} />
+          <span className="flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
             Lire <ArrowRight size={12} />
           </span>
         </div>
