@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Hub - Votre veille IA personnalisee",
+    default: "AI Hub — Votre veille IA personnalisee",
     template: "%s | AI Hub",
   },
   description:
@@ -35,7 +35,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <div className="flex min-h-screen flex-col">
+          {/* Floating particles (cyberpunk ambiance) */}
+          <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden dark:block hidden">
+            <div className="particle" />
+            <div className="particle" />
+            <div className="particle" />
+            <div className="particle" />
+            <div className="particle" />
+          </div>
+
+          <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />

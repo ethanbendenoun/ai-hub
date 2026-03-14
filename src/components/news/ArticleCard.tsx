@@ -27,14 +27,17 @@ export default function ArticleCard({ article }: { article: Article }) {
       href={article.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-hover group flex flex-col rounded-xl border border-card-border bg-card p-5 transition-all"
+      className="card-hover group flex flex-col rounded-xl border border-card-border/50 bg-card/80 backdrop-blur-sm p-5 transition-all"
     >
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
             className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
-            style={{ backgroundColor: article.sourceColor }}
+            style={{
+              backgroundColor: article.sourceColor,
+              boxShadow: `0 0 12px ${article.sourceColor}40`,
+            }}
           >
             {article.sourceIcon}
           </span>
@@ -52,7 +55,7 @@ export default function ArticleCard({ article }: { article: Article }) {
       </div>
 
       {/* Title */}
-      <h3 className="mb-2 text-base font-semibold leading-snug group-hover:text-accent">
+      <h3 className="mb-2 text-base font-semibold leading-snug group-hover:text-neon-cyan transition-colors">
         {article.title}
       </h3>
 
@@ -72,13 +75,12 @@ export default function ArticleCard({ article }: { article: Article }) {
         {article.categories.slice(0, 2).map((catId) => {
           const cat = CATEGORIES.find((c) => c.id === catId);
           return cat ? (
-            <Badge key={catId} variant="accent">
+            <Badge key={catId} variant="cyber">
               {cat.label}
             </Badge>
           ) : null;
         })}
 
-        {/* Like buttons + external link */}
         <div className="ml-auto flex items-center gap-1">
           <LikeButtons
             url={article.url}

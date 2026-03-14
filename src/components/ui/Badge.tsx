@@ -1,15 +1,16 @@
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "default" | "accent" | "impact" | "success" | "warning";
+  variant?: "default" | "accent" | "impact" | "success" | "warning" | "cyber";
   size?: "sm" | "md";
 }
 
 const variantClasses = {
-  default: "bg-card border border-card-border text-muted",
+  default: "bg-card/80 border border-card-border text-muted",
   accent: "bg-accent/10 text-accent border border-accent/20",
   impact: "bg-warning/10 text-warning border border-warning/20",
   success: "bg-success/10 text-success border border-success/20",
   warning: "bg-warning/10 text-warning border border-warning/20",
+  cyber: "bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20",
 };
 
 const sizeClasses = {
