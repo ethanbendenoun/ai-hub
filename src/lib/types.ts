@@ -12,6 +12,9 @@ export interface Article {
   isImpact: boolean;
   slug: string;
   imageUrl?: string;
+  region?: "international" | "france" | "product";
+  product?: string;
+  summaryFr?: string; // French translation for flash
 }
 
 export interface FlashItem {

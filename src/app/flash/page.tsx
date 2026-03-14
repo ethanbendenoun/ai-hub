@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Zap, TrendingUp, Target, BarChart3 } from "lucide-react";
+import { Zap, TrendingUp, Target, BarChart3, Heart } from "lucide-react";
 import FlashCard from "@/components/news/FlashCard";
 import { getFlashArticles, getArticles } from "@/lib/rss";
 import { CATEGORIES } from "@/lib/constants";
@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Flash IA",
-  description: "Les actualites IA resumees et analysees - ce qui compte vraiment",
+  description: "Les actualites IA a fort impact, resumees en francais",
 };
 
 async function FlashContent() {
@@ -22,7 +22,6 @@ async function FlashContent() {
     allArticles = [];
   }
 
-  // Compute category distribution for the visual chart
   const categoryStats = CATEGORIES.filter((c) => c.id !== "all").map((cat) => {
     const count = allArticles.filter((a) =>
       a.categories.includes(cat.id)
@@ -34,6 +33,18 @@ async function FlashContent() {
 
   return (
     <>
+      {/* Info banner */}
+      <div className="mb-8 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 p-4">
+        <Heart size={20} className="mt-0.5 shrink-0 text-accent" />
+        <div>
+          <p className="text-sm font-semibold">Personnalisez votre flux</p>
+          <p className="text-xs text-muted">
+            Utilisez les boutons 👍/👎 sur les articles pour indiquer ce qui vous interesse.
+            Avec le temps, votre flux deviendra de plus en plus pertinent.
+          </p>
+        </div>
+      </div>
+
       {/* Stats overview */}
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-card-border bg-card p-5">
@@ -43,7 +54,7 @@ async function FlashContent() {
           </div>
           <div className="text-3xl font-bold">{flashArticles.length}</div>
           <p className="mt-1 text-xs text-muted">
-            Sur {allArticles.length} articles total
+            Sur {allArticles.length} articles total — on garde que l&apos;essentiel
           </p>
         </div>
 
@@ -68,7 +79,7 @@ async function FlashContent() {
           <div className="text-3xl font-bold">
             {new Set(allArticles.map((a) => a.source)).size}
           </div>
-          <p className="mt-1 text-xs text-muted">Flux RSS surveilles</p>
+          <p className="mt-1 text-xs text-muted">Flux RSS surveilles (FR + International)</p>
         </div>
       </div>
 
@@ -114,7 +125,7 @@ async function FlashContent() {
           <Zap size={40} className="mx-auto mb-4 text-warning" />
           <p className="text-lg font-medium">Pas de Flash pour le moment</p>
           <p className="mt-2 text-sm">
-            Les articles a fort impact apparaitront ici automatiquement.
+            Les articles a fort impact apparaitront ici automatiquement, resumes en francais.
           </p>
         </div>
       )}
@@ -134,8 +145,8 @@ export default function FlashPage() {
           <h1 className="text-3xl font-extrabold">Flash IA</h1>
         </div>
         <p className="text-muted">
-          Les news IA resumees et analysees. On garde que ce qui compte :
-          lancements, tendances, et ce qui peut impacter votre quotidien.
+          Seulement les news a fort impact, resumees en francais. Pas de bruit, que l&apos;essentiel
+          pour rester informe sans se surcharger.
         </p>
       </div>
 

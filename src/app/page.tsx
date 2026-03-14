@@ -8,20 +8,25 @@ import {
   Bot,
   Sparkles,
   TrendingUp,
+  Box,
+  Heart,
 } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
 import GuideCard from "@/components/guides/GuideCard";
-import { getArticles } from "@/lib/rss";
+import { getArticles, getProductArticles } from "@/lib/rss";
 import { getAllGuides } from "@/lib/guides";
 
 export const revalidate = 3600;
 
 export default async function HomePage() {
   let articles: Awaited<ReturnType<typeof getArticles>> = [];
+  let productArticles: Awaited<ReturnType<typeof getProductArticles>> = [];
   try {
     articles = await getArticles();
+    productArticles = await getProductArticles();
   } catch {
     articles = [];
+    productArticles = [];
   }
   const guides = getAllGuides();
   const impactArticles = articles.filter((a) => a.isImpact).slice(0, 3);
@@ -31,7 +36,6 @@ export default async function HomePage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
       {/* Hero Section */}
       <section className="relative py-16 sm:py-24">
-        {/* Background glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="h-[400px] w-[600px] rounded-full bg-accent/5 blur-3xl" />
         </div>
@@ -48,18 +52,24 @@ export default async function HomePage() {
           </h1>
 
           <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
-            Presse, Flash, Decouverte &mdash; Toute l&apos;actu IA analysee,
-            les meilleurs outils decryptes, et des guides pour exploiter les
-            agents IA a leur plein potentiel.
+            Presse, Flash, Produits, Decouverte &mdash; L&apos;essentiel de l&apos;actu IA
+            sans surcharge. Likez les articles pour personnaliser votre flux.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/presse"
+              href="/flash"
               className="flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-semibold text-white shadow-lg shadow-accent/25 transition-all hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
             >
-              <Newspaper size={18} />
-              Explorer la Presse IA
+              <Zap size={18} />
+              Flash IA — L&apos;essentiel
+            </Link>
+            <Link
+              href="/produits"
+              className="flex items-center gap-2 rounded-xl border border-card-border bg-card px-6 py-3 font-semibold transition-all hover:border-accent/30 hover:-translate-y-0.5"
+            >
+              <Box size={18} />
+              Produits IA
             </Link>
             <Link
               href="/decouverte"
@@ -78,7 +88,7 @@ export default async function HomePage() {
           {
             icon: <Newspaper size={20} />,
             value: `${articles.length}+`,
-            label: "Articles",
+            label: "Articles (FR + Intl)",
           },
           {
             icon: <Flame size={20} />,
@@ -86,9 +96,9 @@ export default async function HomePage() {
             label: "Impacts forts",
           },
           {
-            icon: <BookOpen size={20} />,
-            value: `${guides.length}`,
-            label: "Guides",
+            icon: <Box size={20} />,
+            value: `${productArticles.length}`,
+            label: "News produits",
           },
           {
             icon: <Bot size={20} />,
@@ -107,6 +117,21 @@ export default async function HomePage() {
         ))}
       </section>
 
+      {/* Personalization banner */}
+      <section className="mb-16">
+        <div className="flex items-start gap-4 rounded-xl border border-accent/20 bg-accent/5 p-6">
+          <Heart size={24} className="mt-1 shrink-0 text-accent" />
+          <div>
+            <h3 className="text-lg font-bold">Personnalisez votre veille</h3>
+            <p className="mt-1 text-sm text-muted">
+              Utilisez les boutons 👍 et 👎 sur chaque article pour indiquer vos centres d&apos;interet.
+              Avec le temps, AI Hub apprendra ce qui vous interesse le plus — agents IA, nouvelles
+              releases, outils de productivite, monetisation...
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Impact News */}
       {impactArticles.length > 0 && (
         <section className="mb-16">
@@ -117,7 +142,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">A ne pas manquer</h2>
-                <p className="text-sm text-muted">Les news a fort impact</p>
+                <p className="text-sm text-muted">Les news a fort impact uniquement</p>
               </div>
             </div>
             <Link
@@ -135,6 +160,34 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* Product news preview */}
+      {productArticles.length > 0 && (
+        <section className="mb-16">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10">
+                <Box size={20} className="text-purple-500" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">News Produits IA</h2>
+                <p className="text-sm text-muted">Claude, ChatGPT, Gemini, Perplexity, Cursor...</p>
+              </div>
+            </div>
+            <Link
+              href="/produits"
+              className="flex items-center gap-1 text-sm font-medium text-accent hover:underline"
+            >
+              Tous les produits <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {productArticles.slice(0, 3).map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Latest News */}
       <section className="mb-16">
         <div className="mb-6 flex items-center justify-between">
@@ -144,7 +197,7 @@ export default async function HomePage() {
             </div>
             <div>
               <h2 className="text-xl font-bold">Dernieres actualites</h2>
-              <p className="text-sm text-muted">Flux RSS en temps reel</p>
+              <p className="text-sm text-muted">Presse internationale + francaise</p>
             </div>
           </div>
           <Link

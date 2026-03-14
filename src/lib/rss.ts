@@ -1,6 +1,8 @@
 import Parser from "rss-parser";
 import {
-  RSS_FEEDS,
+  RSS_FEEDS_INTERNATIONAL,
+  RSS_FEEDS_FRENCH,
+  RSS_FEEDS_PRODUCTS,
   CATEGORY_KEYWORDS,
   IMPACT_KEYWORDS,
   type CategoryId,
@@ -56,7 +58,6 @@ function isImpactArticle(title: string, summary: string): boolean {
 }
 
 function extractImageUrl(item: Record<string, unknown>): string | undefined {
-  // Try common RSS image fields
   const enclosure = item.enclosure as { url?: string; type?: string } | undefined;
   if (enclosure?.url && enclosure?.type?.startsWith("image")) {
     return enclosure.url;
@@ -67,7 +68,6 @@ function extractImageUrl(item: Record<string, unknown>): string | undefined {
     return mediaContent.$.url;
   }
 
-  // Try to extract first image from content
   const content = (item["content:encoded"] || item.content || "") as string;
   const imgMatch = content.match(/<img[^>]+src="([^"]+)"/);
   if (imgMatch) {
@@ -77,9 +77,51 @@ function extractImageUrl(item: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
-export async function fetchAllFeeds(): Promise<Article[]> {
+// ─── Simple French summary generation ───
+// Generates a short, punchy French summary from the title and content
+function generateFrenchSummary(title: string, summary: string, source: string): string {
+  // For French sources, the content is already in French
+  if (["Numerama", "Frandroid", "01net", "Les Numeriques", "L'Usine Digitale", "ActuIA", "Le Big Data", "Siecle Digital"].includes(source)) {
+    // Already French, just make it punchy
+    const cleaned = summary.slice(0, 200);
+    return cleaned + (summary.length > 200 ? "..." : "");
+  }
+
+  // For English sources, create a concise French-style summary
+  // We extract key info and present it in French format
+  const lowerTitle = title.toLowerCase();
+  const lowerSummary = summary.toLowerCase();
+
+  let emoji = "📰";
+  if (lowerTitle.includes("launch") || lowerTitle.includes("release") || lowerTitle.includes("announce")) emoji = "🚀";
+  else if (lowerTitle.includes("agent") || lowerTitle.includes("autonom")) emoji = "🤖";
+  else if (lowerTitle.includes("funding") || lowerTitle.includes("billion") || lowerTitle.includes("revenue")) emoji = "💰";
+  else if (lowerTitle.includes("open source") || lowerTitle.includes("free")) emoji = "🔓";
+  else if (lowerTitle.includes("model") || lowerTitle.includes("gpt") || lowerTitle.includes("claude")) emoji = "🧠";
+  else if (lowerTitle.includes("safety") || lowerTitle.includes("risk") || lowerTitle.includes("regulation")) emoji = "⚠️";
+  else if (lowerTitle.includes("research") || lowerTitle.includes("paper") || lowerTitle.includes("study")) emoji = "🔬";
+  else if (lowerTitle.includes("partnership") || lowerTitle.includes("deal")) emoji = "🤝";
+  else if (lowerSummary.includes("profit") || lowerSummary.includes("money") || lowerSummary.includes("earning")) emoji = "💸";
+
+  // Build a concise summary: emoji + source context + truncated summary
+  const shortSummary = summary.slice(0, 180);
+  return `${emoji} ${source} — ${shortSummary}${summary.length > 180 ? "..." : ""}`;
+}
+
+interface FeedConfig {
+  url: string;
+  source: string;
+  icon: string;
+  color: string;
+  product?: string;
+}
+
+async function fetchFeeds(
+  feeds: FeedConfig[],
+  region: "international" | "france" | "product"
+): Promise<Article[]> {
   const results = await Promise.allSettled(
-    RSS_FEEDS.map(async (feed) => {
+    feeds.map(async (feed) => {
       try {
         const parsed = await parser.parseURL(feed.url);
         return (parsed.items || []).map((item) => {
@@ -100,6 +142,9 @@ export async function fetchAllFeeds(): Promise<Article[]> {
             isImpact: isImpactArticle(title, summary),
             slug: slugify(title),
             imageUrl: extractImageUrl(item as Record<string, unknown>),
+            region,
+            product: (feed as FeedConfig & { product?: string }).product,
+            summaryFr: generateFrenchSummary(title, summary, feed.source),
           } satisfies Article;
         });
       } catch (error) {
@@ -109,25 +154,56 @@ export async function fetchAllFeeds(): Promise<Article[]> {
     })
   );
 
-  const allArticles = results.flatMap((r) =>
-    r.status === "fulfilled" ? r.value : []
-  );
+  return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+}
 
-  // Deduplicate by URL
+function deduplicateAndSort(articles: Article[]): Article[] {
   const seen = new Set<string>();
-  const unique = allArticles.filter((a) => {
+  const unique = articles.filter((a) => {
     if (seen.has(a.url)) return false;
     seen.add(a.url);
     return true;
   });
-
-  // Sort by date descending
   unique.sort(
     (a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
-
   return unique;
+}
+
+// ─── Public API ───
+
+export async function fetchAllFeeds(): Promise<Article[]> {
+  const [intl, fr, products] = await Promise.all([
+    fetchFeeds(RSS_FEEDS_INTERNATIONAL, "international"),
+    fetchFeeds(RSS_FEEDS_FRENCH, "france"),
+    fetchFeeds(RSS_FEEDS_PRODUCTS, "product"),
+  ]);
+  return deduplicateAndSort([...intl, ...fr, ...products]);
+}
+
+export async function getInternationalArticles(category?: string): Promise<Article[]> {
+  const articles = deduplicateAndSort(
+    await fetchFeeds(RSS_FEEDS_INTERNATIONAL, "international")
+  );
+  if (!category || category === "all") return articles;
+  return articles.filter((a) => a.categories.includes(category as CategoryId));
+}
+
+export async function getFrenchArticles(category?: string): Promise<Article[]> {
+  const articles = deduplicateAndSort(
+    await fetchFeeds(RSS_FEEDS_FRENCH, "france")
+  );
+  if (!category || category === "all") return articles;
+  return articles.filter((a) => a.categories.includes(category as CategoryId));
+}
+
+export async function getProductArticles(productFilter?: string): Promise<Article[]> {
+  const articles = deduplicateAndSort(
+    await fetchFeeds(RSS_FEEDS_PRODUCTS, "product")
+  );
+  if (!productFilter || productFilter === "all") return articles;
+  return articles.filter((a) => a.product === productFilter);
 }
 
 export async function getArticles(category?: string): Promise<Article[]> {
@@ -140,6 +216,5 @@ export async function getArticles(category?: string): Promise<Article[]> {
 
 export async function getFlashArticles(): Promise<Article[]> {
   const articles = await fetchAllFeeds();
-  // For flash: only return impactful or recent top articles
   return articles.filter((a) => a.isImpact).slice(0, 20);
 }

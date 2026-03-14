@@ -1,7 +1,8 @@
 export const SITE_NAME = "AI Hub";
-export const SITE_DESCRIPTION = "Votre veille IA personnalisee - Presse, Flash, Decouverte";
+export const SITE_DESCRIPTION = "Votre veille IA personnalisee - Presse, Flash, Produits, Decouverte";
 
-export const RSS_FEEDS = [
+// ─── PRESSE INTERNATIONALE ───
+export const RSS_FEEDS_INTERNATIONAL = [
   {
     url: "https://techcrunch.com/category/artificial-intelligence/feed/",
     source: "TechCrunch",
@@ -21,29 +22,131 @@ export const RSS_FEEDS = [
     color: "#ff4e00",
   },
   {
-    url: "https://openai.com/blog/rss.xml",
-    source: "OpenAI",
-    icon: "OA",
-    color: "#10a37f",
+    url: "https://venturebeat.com/category/ai/feed/",
+    source: "VentureBeat",
+    icon: "VB",
+    color: "#c4151c",
   },
+  {
+    url: "https://www.wired.com/feed/tag/ai/latest/rss",
+    source: "Wired",
+    icon: "WR",
+    color: "#000000",
+  },
+];
+
+// ─── PRESSE FRANCAISE ───
+export const RSS_FEEDS_FRENCH = [
+  // Generalistes tech
+  {
+    url: "https://www.numerama.com/tech/feed/",
+    source: "Numerama",
+    icon: "NM",
+    color: "#1a73e8",
+  },
+  {
+    url: "https://www.frandroid.com/feed",
+    source: "Frandroid",
+    icon: "FR",
+    color: "#ff6600",
+  },
+  {
+    url: "https://www.01net.com/feed/",
+    source: "01net",
+    icon: "01",
+    color: "#e30613",
+  },
+  {
+    url: "https://www.lesnumeriques.com/rss.xml",
+    source: "Les Numeriques",
+    icon: "LN",
+    color: "#0078d4",
+  },
+  {
+    url: "https://www.usine-digitale.fr/rss",
+    source: "L'Usine Digitale",
+    icon: "UD",
+    color: "#003366",
+  },
+  // Specialisees IA
+  {
+    url: "https://www.actuia.com/feed/",
+    source: "ActuIA",
+    icon: "AI",
+    color: "#6c5ce7",
+  },
+  {
+    url: "https://www.lebigdata.fr/feed",
+    source: "Le Big Data",
+    icon: "BD",
+    color: "#00b894",
+  },
+  {
+    url: "https://siecledigital.fr/feed/",
+    source: "Siecle Digital",
+    icon: "SD",
+    color: "#2d3436",
+  },
+];
+
+// ─── PRODUITS IA (blogs officiels / changelogs) ───
+export const RSS_FEEDS_PRODUCTS = [
   {
     url: "https://www.anthropic.com/feed.xml",
     source: "Anthropic",
     icon: "AN",
     color: "#d4a27f",
+    product: "Claude",
+  },
+  {
+    url: "https://openai.com/blog/rss.xml",
+    source: "OpenAI",
+    icon: "OA",
+    color: "#10a37f",
+    product: "ChatGPT / GPT",
   },
   {
     url: "https://blog.google/technology/ai/rss/",
     source: "Google AI",
     icon: "GA",
     color: "#4285f4",
+    product: "Gemini",
   },
   {
     url: "https://huggingface.co/blog/feed.xml",
     source: "Hugging Face",
     icon: "HF",
     color: "#ffbd45",
+    product: "Open Source",
   },
+  {
+    url: "https://www.perplexity.ai/hub/blog/rss.xml",
+    source: "Perplexity",
+    icon: "PX",
+    color: "#20b2aa",
+    product: "Perplexity",
+  },
+  {
+    url: "https://cursor.com/blog/rss.xml",
+    source: "Cursor",
+    icon: "CU",
+    color: "#7c3aed",
+    product: "Cursor",
+  },
+  {
+    url: "https://www.langchain.com/blog/rss.xml",
+    source: "LangChain",
+    icon: "LC",
+    color: "#1c3c3c",
+    product: "LangChain",
+  },
+];
+
+// All feeds combined for legacy compat
+export const RSS_FEEDS = [
+  ...RSS_FEEDS_INTERNATIONAL,
+  ...RSS_FEEDS_FRENCH,
+  ...RSS_FEEDS_PRODUCTS,
 ];
 
 export const CATEGORIES = [
@@ -58,6 +161,18 @@ export const CATEGORIES = [
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
 
+// ─── PRODUCT FILTERS for the Produits page ───
+export const PRODUCT_FILTERS = [
+  { id: "all", label: "Tous", icon: "Layers" },
+  { id: "Claude", label: "Claude", icon: "Bot" },
+  { id: "ChatGPT / GPT", label: "OpenAI / GPT", icon: "Brain" },
+  { id: "Gemini", label: "Gemini", icon: "Sparkles" },
+  { id: "Perplexity", label: "Perplexity", icon: "Search" },
+  { id: "Cursor", label: "Cursor", icon: "Code" },
+  { id: "Open Source", label: "Open Source", icon: "Github" },
+  { id: "LangChain", label: "LangChain / Agents", icon: "Link" },
+] as const;
+
 // Keywords used to auto-categorize articles
 export const CATEGORY_KEYWORDS: Record<Exclude<CategoryId, "all">, string[]> = {
   agents: [
@@ -65,12 +180,14 @@ export const CATEGORY_KEYWORDS: Record<Exclude<CategoryId, "all">, string[]> = {
     "copilot", "assistant", "agentic", "mcp", "tool use", "function calling",
     "crew", "autogen", "langchain", "langgraph", "openai agents", "swarm",
     "mac mini", "army", "worker", "automation", "automate", "skill",
-    "openclaw", "open claw", "devin", "cursor", "codegen",
+    "openclaw", "open claw", "clawcode", "claw code", "devin", "cursor", "codegen",
+    "crewai", "autogpt", "auto-gpt",
   ],
   llms: [
     "gpt", "claude", "gemini", "llama", "mistral", "llm", "language model",
     "transformer", "token", "context window", "fine-tune", "fine-tuning",
     "benchmark", "reasoning", "chain of thought", "o1", "o3", "opus", "sonnet", "haiku",
+    "gpt-5", "gpt-4", "claude 4", "modele de langage",
   ],
   outils: [
     "tool", "outil", "api", "sdk", "platform", "plateforme", "app",
@@ -80,7 +197,8 @@ export const CATEGORY_KEYWORDS: Record<Exclude<CategoryId, "all">, string[]> = {
   business: [
     "startup", "funding", "revenue", "profit", "business", "enterprise",
     "valuation", "invest", "market", "monetiz", "saas", "pricing",
-    "acquisition", "ipo", "partnership", "deal",
+    "acquisition", "ipo", "partnership", "deal", "generer", "argent", "money",
+    "earning", "income", "revenu",
   ],
   recherche: [
     "research", "paper", "arxiv", "study", "breakthrough", "novel",
@@ -100,11 +218,13 @@ export const IMPACT_KEYWORDS = [
   "first", "new model", "major", "game-chang", "disrupt", "billion",
   "acquisition", "partnership", "open source", "free", "available now",
   "agent", "autonomous", "profit", "money", "earning",
+  "lancement", "sortie", "annonce", "disponible", "nouveau modele",
 ];
 
 export const NAV_LINKS = [
   { href: "/", label: "Accueil" },
   { href: "/presse", label: "Presse IA" },
   { href: "/flash", label: "Flash IA" },
+  { href: "/produits", label: "Produits IA" },
   { href: "/decouverte", label: "Decouverte" },
 ];

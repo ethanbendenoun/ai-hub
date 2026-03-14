@@ -1,5 +1,6 @@
 import { ExternalLink, Flame, Clock } from "lucide-react";
 import Badge from "@/components/ui/Badge";
+import LikeButtons from "@/components/news/LikeButtons";
 import { CATEGORIES } from "@/lib/constants";
 import type { Article } from "@/lib/types";
 
@@ -40,6 +41,9 @@ export default function ArticleCard({ article }: { article: Article }) {
           <span className="text-xs font-medium text-muted">
             {article.source}
           </span>
+          {article.region === "france" && (
+            <span className="text-xs">🇫🇷</span>
+          )}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted">
           <Clock size={12} />
@@ -73,10 +77,19 @@ export default function ArticleCard({ article }: { article: Article }) {
             </Badge>
           ) : null;
         })}
-        <ExternalLink
-          size={14}
-          className="ml-auto text-muted opacity-0 transition-opacity group-hover:opacity-100"
-        />
+
+        {/* Like buttons + external link */}
+        <div className="ml-auto flex items-center gap-1">
+          <LikeButtons
+            url={article.url}
+            categories={article.categories}
+            source={article.source}
+          />
+          <ExternalLink
+            size={14}
+            className="text-muted opacity-0 transition-opacity group-hover:opacity-100"
+          />
+        </div>
       </div>
     </a>
   );
