@@ -252,25 +252,31 @@ export const GENERALIST_SOURCES = [
 ];
 
 // Keywords that an article must contain (title OR summary) to pass the AI filter
+// Short keywords (<=3 chars) are matched with word boundaries to avoid false positives
 export const AI_RELEVANCE_KEYWORDS = [
-  // Core AI terms
+  // Core AI terms (short ones use word-boundary matching)
   "ia", "ai", "intelligence artificielle", "artificial intelligence",
   "machine learning", "deep learning", "apprentissage automatique",
   "apprentissage profond", "reseau de neurones", "neural network",
+  "nlp", "computer vision",
   // Models & LLMs
   "llm", "gpt", "chatgpt", "openai", "claude", "anthropic", "gemini", "mistral",
   "llama", "meta ai", "copilot", "perplexity", "deepseek",
-  "modele de langage", "language model", "transformer", "diffusion",
-  "stable diffusion", "midjourney", "dall-e", "sora", "generative",
+  "modele de langage", "language model", "transformer model", "diffusion model",
+  "stable diffusion", "midjourney", "dall-e", "sora", "generative ai",
+  "image generation", "text generation", "generation de texte",
   // Agents & tools
-  "agent", "chatbot", "prompt", "fine-tuning", "fine-tune", "rag",
-  "retrieval augmented", "vector", "embedding", "tokeniz",
-  "langchain", "hugging face", "huggingface", "cursor", "devin",
+  "agent ia", "ai agent", "chatbot", "prompt", "fine-tuning", "fine-tune", "rag",
+  "retrieval augmented", "vector database", "embedding", "tokeniz",
+  "langchain", "hugging face", "huggingface", "cursor ai", "devin",
   // Research
   "arxiv", "benchmark", "rlhf", "alignment", "reasoning", "multimodal",
+  "large language", "neural net", "deep neural",
   // Business AI
-  "robot", "automat", "autonome", "autonomous",
-  "generat", "syntheti", "hallucin",
+  "robotique", "robotic", "automation ia", "ai automation",
+  "autonome ia", "autonomous ai", "autonomous agent",
+  "syntheti", "hallucin", "text-to-", "text to image",
+  "artificial general", "agi",
 ];
 
 // Keywords that flag an article as high-impact

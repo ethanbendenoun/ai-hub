@@ -120,11 +120,26 @@ function generateFrenchTitle(title: string, source: string): string {
 }
 
 // ─── AI relevance filter for generalist sources ───
+// Short keywords (<=3 chars) use word-boundary regex to avoid false positives
+// e.g. "ai" must not match inside "taille", "faire", "essai" etc.
+const _shortKwRegexCache = new Map<string, RegExp>();
+function _matchKeyword(text: string, kw: string): boolean {
+  if (kw.length <= 3) {
+    let re = _shortKwRegexCache.get(kw);
+    if (!re) {
+      re = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+      _shortKwRegexCache.set(kw, re);
+    }
+    return re.test(text);
+  }
+  return text.includes(kw.toLowerCase());
+}
+
 function isAIRelevant(title: string, summary: string, source: string): boolean {
   // Pure-player AI sources are always relevant
   if (!GENERALIST_SOURCES.includes(source)) return true;
   const text = `${title} ${summary}`.toLowerCase();
-  return AI_RELEVANCE_KEYWORDS.some((kw) => text.includes(kw.toLowerCase()));
+  return AI_RELEVANCE_KEYWORDS.some((kw) => _matchKeyword(text, kw));
 }
 
 interface FeedConfig {
