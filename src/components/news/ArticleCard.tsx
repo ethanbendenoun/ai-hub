@@ -19,57 +19,30 @@ function timeAgo(dateStr: string): string {
 
 export default function ArticleCard({ article }: { article: Article }) {
   return (
-    <a
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="card-hover group flex flex-col rounded-2xl border border-card-border bg-card p-5 transition-all"
-    >
-      {/* Source + time */}
+    <a href={article.url} target="_blank" rel="noopener noreferrer"
+      className="card-hover group flex flex-col rounded-[20px] border border-card-border bg-card p-5">
       <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <span
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-bold text-white shadow-sm"
-            style={{ backgroundColor: article.sourceColor }}
-          >
-            {article.sourceIcon}
-          </span>
-          <div>
-            <span className="text-xs font-semibold">{article.source}</span>
-            {article.region === "france" && <span className="ml-1 text-xs">🇫🇷</span>}
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl text-xs font-bold text-white"
+            style={{ backgroundColor: article.sourceColor }}>{article.sourceIcon}</span>
+          <span className="text-sm font-medium">{article.source}</span>
+          {article.region === "france" && <span className="text-xs">🇫🇷</span>}
         </div>
-        <span className="flex items-center gap-1 rounded-full bg-foreground/5 px-2 py-0.5 text-xs text-muted">
-          <Clock size={10} />
-          {timeAgo(article.publishedAt)}
+        <span className="flex items-center gap-1 text-xs text-muted">
+          <Clock size={11} />{timeAgo(article.publishedAt)}
         </span>
       </div>
-
-      {/* Title */}
-      <h3 className="mb-2 text-[15px] font-semibold leading-snug group-hover:text-accent transition-colors">
-        {article.title}
-      </h3>
-
-      {/* Summary */}
-      <p className="mb-4 flex-1 text-sm leading-relaxed text-muted line-clamp-3">
-        {article.summary}
-      </p>
-
-      {/* Footer */}
+      <h3 className="mb-2 font-semibold leading-snug group-hover:text-accent transition-colors">{article.title}</h3>
+      <p className="mb-4 flex-1 text-sm leading-relaxed text-muted line-clamp-3">{article.summary}</p>
       <div className="flex flex-wrap items-center gap-1.5">
-        {article.isImpact && (
-          <Badge variant="impact">
-            <Flame size={11} />
-            Impact
-          </Badge>
-        )}
+        {article.isImpact && <Badge variant="impact"><Flame size={11} />Impact</Badge>}
         {article.categories.slice(0, 2).map((catId) => {
           const cat = CATEGORIES.find((c) => c.id === catId);
           return cat ? <Badge key={catId} variant="accent">{cat.label}</Badge> : null;
         })}
         <div className="ml-auto flex items-center gap-1">
           <LikeButtons url={article.url} categories={article.categories} source={article.source} />
-          <ExternalLink size={13} className="text-muted opacity-0 transition-opacity group-hover:opacity-100" />
+          <ExternalLink size={13} className="text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       </div>
     </a>
