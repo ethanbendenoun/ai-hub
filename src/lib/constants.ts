@@ -322,7 +322,7 @@ export const CURATED_VIDEOS: Video[] = [
     tags: ["Claude Code", "Dev", "Agents IA"],
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "2jKJmE1hXfI",
     title: "Mistral AI : La France dans la course aux LLMs",
     channel: "Mistral AI",
     channelIcon: "M",
