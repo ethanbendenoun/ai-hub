@@ -157,6 +157,29 @@
 
 html.dark { color-scheme: dark; }
 
+/* ─── Card base (Nixtio depth) ─── */
+.nixtio-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.dark .nixtio-card {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.nixtio-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(400px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139,92,246,0.06), transparent 60%);
+  pointer-events: none;
+}
+.nixtio-card:hover::before { opacity: 1; }
+
 /* ─── Card hover (Nixtio smooth) ─── */
 .card-hover {
   transition: transform 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.3s cubic-bezier(.4,0,.2,1);
@@ -166,13 +189,26 @@ html.dark { color-scheme: dark; }
   box-shadow: 0 12px 40px rgba(139, 92, 246, 0.08);
 }
 .dark .card-hover:hover {
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 16px 48px rgba(139, 92, 246, 0.18), 0 0 0 1px rgba(139,92,246,0.1);
 }
 
 /* ─── Gradient card (Nixtio +278k) ─── */
 .gradient-card {
-  background: linear-gradient(135deg, #8b5cf6, #f97316);
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 40%, #f97316 100%);
   color: white;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.gradient-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 /* ─── Gradient text ─── */
@@ -183,18 +219,72 @@ html.dark { color-scheme: dark; }
   background-clip: text;
 }
 
+/* ─── Chart area (Nixtio purple chart) ─── */
+.chart-area {
+  background: linear-gradient(180deg, rgba(139,92,246,0.2) 0%, rgba(139,92,246,0.02) 100%);
+  border-top: 2px solid #8b5cf6;
+  position: relative;
+}
+.chart-area::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+  box-shadow: 0 0 12px rgba(139,92,246,0.5);
+}
+
 /* ─── Chart bars ─── */
 .bar-purple {
   background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
   border-radius: 6px 6px 2px 2px;
+  box-shadow: 0 0 12px rgba(139,92,246,0.3);
+  position: relative;
+}
+.bar-purple::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 6px 6px 0 0;
 }
 
 /* ─── Dots ─── */
 .dot-live { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.4); }
+.dot-warning { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+.dot-danger { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+.dot-accent { background: #8b5cf6; box-shadow: 0 0 8px rgba(139,92,246,0.4); }
 
 /* ─── Pulse ─── */
 @keyframes pulse-soft { 0%,100%{opacity:1} 50%{opacity:0.4} }
 .pulse-dot { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* ─── Glow ring (hover effect for icons) ─── */
+.glow-ring {
+  transition: box-shadow 0.3s, background-color 0.3s;
+}
+.glow-ring:hover {
+  box-shadow: 0 0 20px rgba(139,92,246,0.3);
+}
+
+/* ─── Stat number (large Nixtio numbers) ─── */
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Glass effect ─── */
+.glass {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 5px; }
