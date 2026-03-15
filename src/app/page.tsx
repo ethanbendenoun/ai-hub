@@ -33,6 +33,21 @@ export default async function HomePage() {
   articles.forEach((a) => sourceMap.set(a.source, (sourceMap.get(a.source) || 0) + 1));
   const topSources = [...sourceMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
+  // Product breakdown for Products card
+  const productMap = new Map<string, number>();
+  productArticles.forEach((a) => { if (a.product) productMap.set(a.product, (productMap.get(a.product) || 0) + 1); });
+  const topProducts = [...productMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+
+  // Top intl and FR sources for Articles card
+  const intlSources = new Map<string, number>();
+  const frSources = new Map<string, number>();
+  articles.forEach((a) => {
+    if (a.region === "international") intlSources.set(a.source, (intlSources.get(a.source) || 0) + 1);
+    if (a.region === "france") frSources.set(a.source, (frSources.get(a.source) || 0) + 1);
+  });
+  const topIntlSource = [...intlSources.entries()].sort((a, b) => b[1] - a[1])[0];
+  const topFrSource = [...frSources.entries()].sort((a, b) => b[1] - a[1])[0];
+
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-8">
 
@@ -77,62 +92,89 @@ export default async function HomePage() {
       {/* ═══ STATS GRID (Nixtio 4-card layout) ═══ */}
       <div className="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Articles card */}
-        <div className="nixtio-card p-6">
-          <div className="mb-5 flex items-center justify-between">
+        <Link href="/presse" className="nixtio-card card-hover p-6 block">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/10">
               <Newspaper size={20} className="text-accent" />
             </div>
             <Badge variant="accent">Live</Badge>
           </div>
           <div className="stat-number">{articles.length}</div>
-          <p className="mt-2 text-base text-muted-foreground">Articles agreges</p>
-          <div className="mt-4 flex gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full dot-accent" />
-              <span className="text-xs text-muted-foreground">{intlCount} intl</span>
+          <p className="mt-1 text-base text-muted-foreground">Articles agreges</p>
+          <Separator className="my-3" />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Globe size={12} className="text-accent" />
+                <span className="text-sm text-muted-foreground">International</span>
+              </div>
+              <span className="text-sm font-semibold">{intlCount}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full dot-live" />
-              <span className="text-xs text-muted-foreground">{frenchCount} FR</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <MapPin size={12} className="text-success" />
+                <span className="text-sm text-muted-foreground">France</span>
+              </div>
+              <span className="text-sm font-semibold">{frenchCount}</span>
             </div>
           </div>
-        </div>
+          {topIntlSource && (
+            <div className="mt-3 rounded-xl bg-card-inner px-3 py-2">
+              <span className="text-xs text-muted-foreground">Top source : </span>
+              <span className="text-xs font-semibold">{topIntlSource[0]}</span>
+              <span className="text-xs text-muted-foreground"> ({topIntlSource[1]})</span>
+            </div>
+          )}
+        </Link>
 
         {/* Impact card */}
-        <div className="nixtio-card p-6">
-          <div className="mb-5 flex items-center justify-between">
+        <Link href="/flash" className="nixtio-card card-hover p-6 block">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-warning/10">
               <Flame size={20} className="text-warning" />
             </div>
             <Badge variant="impact">Hot</Badge>
           </div>
           <div className="stat-number">{impactArticles.length}</div>
-          <p className="mt-2 text-base text-muted-foreground">A fort impact</p>
-          <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-card-inner">
+          <p className="mt-1 text-base text-muted-foreground">A fort impact</p>
+          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-card-inner">
             <div className="h-full rounded-full bg-gradient-to-r from-warning to-orange-500 transition-all" style={{ width: `${articles.length > 0 ? Math.max(Math.round((impactArticles.length / articles.length) * 100), 5) : 0}%` }} />
           </div>
-        </div>
+          <Separator className="my-3" />
+          <div className="space-y-1.5">
+            {impactArticles.slice(0, 2).map((a, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <Zap size={10} className="mt-1 shrink-0 text-warning" />
+                <span className="text-xs text-muted-foreground line-clamp-1">{a.title}</span>
+              </div>
+            ))}
+          </div>
+        </Link>
 
         {/* Products card */}
-        <div className="nixtio-card p-6">
-          <div className="mb-5 flex items-center justify-between">
+        <Link href="/produits" className="nixtio-card card-hover p-6 block">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10">
               <Box size={20} className="text-blue-500" />
             </div>
-            <Badge>Products</Badge>
+            <Badge>Produits</Badge>
           </div>
           <div className="stat-number">{productArticles.length}</div>
-          <p className="mt-2 text-base text-muted-foreground">News produits</p>
-          <div className="mt-4 flex gap-2">
-            {["🟤", "🟢", "🔵", "🟣"].map((e, i) => (
-              <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full bg-card-inner text-xs">{e}</span>
+          <p className="mt-1 text-base text-muted-foreground">News produits</p>
+          <Separator className="my-3" />
+          <div className="space-y-2">
+            {topProducts.map(([name, count]) => (
+              <div key={name} className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground truncate">{name}</span>
+                <span className="ml-2 shrink-0 text-xs font-semibold text-muted-foreground">{count}</span>
+              </div>
             ))}
           </div>
-        </div>
+        </Link>
 
         {/* Gradient card (Nixtio +278k style) */}
-        <div className="gradient-card rounded-[20px] p-6 flex flex-col justify-between">
-          <div className="mb-5 flex items-center justify-between">
+        <Link href="/decouverte" className="gradient-card rounded-[20px] p-6 flex flex-col justify-between card-hover block">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15">
               <BookOpen size={20} />
             </div>
@@ -140,15 +182,21 @@ export default async function HomePage() {
           </div>
           <div>
             <div className="stat-number">{guides.length}</div>
-            <p className="mt-2 text-sm opacity-80">Guides &amp; tutos</p>
+            <p className="mt-1 text-sm opacity-80">Guides &amp; tutos</p>
           </div>
-          <div className="mt-4 flex -space-x-2">
-            {["C", "P", "G", "M"].map((l, i) => (
-              <div key={i} className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-xs font-bold">{l}</div>
+          <Separator className="my-3 opacity-20" />
+          <div className="space-y-1.5">
+            {guides.slice(0, 3).map((g) => (
+              <div key={g.slug} className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/15 text-[10px] font-bold">{g.title.charAt(0)}</span>
+                <span className="text-xs opacity-90 truncate">{g.title}</span>
+              </div>
             ))}
-            <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white/20 bg-white/10 text-xs font-bold">+{guides.length - 4}</div>
+            {guides.length > 3 && (
+              <span className="text-xs opacity-60">+{guides.length - 3} autres guides</span>
+            )}
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* ═══ CHART + SIDEBAR (Nixtio 2/3 + 1/3 layout) ═══ */}
