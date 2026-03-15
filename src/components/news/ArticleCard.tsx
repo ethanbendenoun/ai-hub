@@ -34,8 +34,8 @@ export default function ArticleCard({ article }: { article: Article }) {
               <Clock size={11} />{timeAgo(article.publishedAt)}
             </span>
           </div>
-          <h3 className="mb-2 font-semibold leading-snug group-hover:text-accent transition-colors">{article.title}</h3>
-          <p className="mb-4 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">{article.summary}</p>
+          <h3 className="mb-2 text-base font-semibold leading-snug group-hover:text-accent transition-colors">{article.title}</h3>
+          <p className="mb-4 flex-1 text-[15px] leading-relaxed text-muted-foreground line-clamp-3">{article.summary}</p>
           <div className="flex flex-wrap items-center gap-1.5">
             {article.isImpact && <Badge variant="impact"><Flame size={11} />Impact</Badge>}
             {article.categories.slice(0, 2).map((catId) => {

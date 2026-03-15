@@ -5,6 +5,8 @@ import {
   RSS_FEEDS_PRODUCTS,
   CATEGORY_KEYWORDS,
   IMPACT_KEYWORDS,
+  GENERALIST_SOURCES,
+  AI_RELEVANCE_KEYWORDS,
   type CategoryId,
 } from "./constants";
 import type { Article } from "./types";
@@ -77,35 +79,52 @@ function extractImageUrl(item: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
+// ─── French sources list ───
+const FRENCH_SOURCES = ["Numerama", "Frandroid", "01net", "Les Numeriques", "L'Usine Digitale", "ActuIA", "Le Big Data", "Siecle Digital", "JDN IA"];
+
 // ─── Simple French summary generation ───
-// Generates a short, punchy French summary from the title and content
 function generateFrenchSummary(title: string, summary: string, source: string): string {
   // For French sources, the content is already in French
-  if (["Numerama", "Frandroid", "01net", "Les Numeriques", "L'Usine Digitale", "ActuIA", "Le Big Data", "Siecle Digital"].includes(source)) {
-    // Already French, just make it punchy
-    const cleaned = summary.slice(0, 200);
-    return cleaned + (summary.length > 200 ? "..." : "");
+  if (FRENCH_SOURCES.includes(source)) {
+    const cleaned = summary.slice(0, 250);
+    return cleaned + (summary.length > 250 ? "..." : "");
   }
 
-  // For English sources, create a concise French-style summary
-  // We extract key info and present it in French format
+  // For English sources, create a contextualized French-style summary
   const lowerTitle = title.toLowerCase();
   const lowerSummary = summary.toLowerCase();
 
   let emoji = "📰";
-  if (lowerTitle.includes("launch") || lowerTitle.includes("release") || lowerTitle.includes("announce")) emoji = "🚀";
-  else if (lowerTitle.includes("agent") || lowerTitle.includes("autonom")) emoji = "🤖";
-  else if (lowerTitle.includes("funding") || lowerTitle.includes("billion") || lowerTitle.includes("revenue")) emoji = "💰";
-  else if (lowerTitle.includes("open source") || lowerTitle.includes("free")) emoji = "🔓";
-  else if (lowerTitle.includes("model") || lowerTitle.includes("gpt") || lowerTitle.includes("claude")) emoji = "🧠";
-  else if (lowerTitle.includes("safety") || lowerTitle.includes("risk") || lowerTitle.includes("regulation")) emoji = "⚠️";
-  else if (lowerTitle.includes("research") || lowerTitle.includes("paper") || lowerTitle.includes("study")) emoji = "🔬";
-  else if (lowerTitle.includes("partnership") || lowerTitle.includes("deal")) emoji = "🤝";
-  else if (lowerSummary.includes("profit") || lowerSummary.includes("money") || lowerSummary.includes("earning")) emoji = "💸";
+  let context = "";
+  if (lowerTitle.includes("launch") || lowerTitle.includes("release") || lowerTitle.includes("announce")) { emoji = "🚀"; context = "Lancement"; }
+  else if (lowerTitle.includes("agent") || lowerTitle.includes("autonom")) { emoji = "🤖"; context = "Agents IA"; }
+  else if (lowerTitle.includes("funding") || lowerTitle.includes("billion") || lowerTitle.includes("revenue")) { emoji = "💰"; context = "Business"; }
+  else if (lowerTitle.includes("open source") || lowerTitle.includes("free")) { emoji = "🔓"; context = "Open Source"; }
+  else if (lowerTitle.includes("model") || lowerTitle.includes("gpt") || lowerTitle.includes("claude") || lowerTitle.includes("gemini") || lowerTitle.includes("llm")) { emoji = "🧠"; context = "Modeles IA"; }
+  else if (lowerTitle.includes("safety") || lowerTitle.includes("risk") || lowerTitle.includes("regulation")) { emoji = "⚠️"; context = "Regulation"; }
+  else if (lowerTitle.includes("research") || lowerTitle.includes("paper") || lowerTitle.includes("study")) { emoji = "🔬"; context = "Recherche"; }
+  else if (lowerTitle.includes("partnership") || lowerTitle.includes("deal") || lowerTitle.includes("acqui")) { emoji = "🤝"; context = "Partenariat"; }
+  else if (lowerSummary.includes("profit") || lowerSummary.includes("money") || lowerSummary.includes("earning")) { emoji = "💸"; context = "Finance"; }
+  else if (lowerTitle.includes("update") || lowerTitle.includes("new feature")) { emoji = "✨"; context = "Mise a jour"; }
 
-  // Build a concise summary: emoji + source context + truncated summary
-  const shortSummary = summary.slice(0, 180);
-  return `${emoji} ${source} — ${shortSummary}${summary.length > 180 ? "..." : ""}`;
+  const shortSummary = summary.slice(0, 220);
+  const prefix = context ? `${emoji} [${context}] ` : `${emoji} `;
+  return `${prefix}${source} — ${shortSummary}${summary.length > 220 ? "..." : ""}`;
+}
+
+// ─── Generate French title from English ───
+function generateFrenchTitle(title: string, source: string): string {
+  if (FRENCH_SOURCES.includes(source)) return title;
+  // Keep the original title but add source context
+  return title;
+}
+
+// ─── AI relevance filter for generalist sources ───
+function isAIRelevant(title: string, summary: string, source: string): boolean {
+  // Pure-player AI sources are always relevant
+  if (!GENERALIST_SOURCES.includes(source)) return true;
+  const text = `${title} ${summary}`.toLowerCase();
+  return AI_RELEVANCE_KEYWORDS.some((kw) => text.includes(kw.toLowerCase()));
 }
 
 interface FeedConfig {
@@ -154,7 +173,9 @@ async function fetchFeeds(
     })
   );
 
-  return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+  const allArticles = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+  // Filter out non-AI articles from generalist sources
+  return allArticles.filter((a) => isAIRelevant(a.title, a.summary, a.source));
 }
 
 function deduplicateAndSort(articles: Article[]): Article[] {

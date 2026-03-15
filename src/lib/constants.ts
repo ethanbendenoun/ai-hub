@@ -33,6 +33,24 @@ export const RSS_FEEDS_INTERNATIONAL = [
     icon: "WR",
     color: "#000000",
   },
+  {
+    url: "https://www.technologyreview.com/feed/",
+    source: "MIT Tech Review",
+    icon: "MT",
+    color: "#d32f2f",
+  },
+  {
+    url: "https://www.marktechpost.com/feed/",
+    source: "MarkTechPost",
+    icon: "MP",
+    color: "#1565c0",
+  },
+  {
+    url: "https://the-decoder.com/feed/",
+    source: "The Decoder",
+    icon: "TD",
+    color: "#00bcd4",
+  },
 ];
 
 // ─── PRESSE FRANCAISE ───
@@ -87,6 +105,12 @@ export const RSS_FEEDS_FRENCH = [
     icon: "SD",
     color: "#2d3436",
   },
+  {
+    url: "https://www.journaldunet.com/intelligence-artificielle/rss/",
+    source: "JDN IA",
+    icon: "JN",
+    color: "#e65100",
+  },
 ];
 
 // ─── PRODUITS IA (blogs officiels / changelogs) ───
@@ -140,6 +164,13 @@ export const RSS_FEEDS_PRODUCTS = [
     color: "#1c3c3c",
     product: "LangChain",
   },
+  {
+    url: "https://mistral.ai/news/rss.xml",
+    source: "Mistral AI",
+    icon: "MI",
+    color: "#ff7000",
+    product: "Mistral",
+  },
 ];
 
 // All feeds combined for legacy compat
@@ -171,6 +202,7 @@ export const PRODUCT_FILTERS = [
   { id: "Cursor", label: "Cursor", icon: "Code" },
   { id: "Open Source", label: "Open Source", icon: "Github" },
   { id: "LangChain", label: "LangChain / Agents", icon: "Link" },
+  { id: "Mistral", label: "Mistral AI", icon: "Flame" },
 ] as const;
 
 // Keywords used to auto-categorize articles
@@ -211,6 +243,35 @@ export const CATEGORY_KEYWORDS: Record<Exclude<CategoryId, "all">, string[]> = {
     "community", "fork", "repo",
   ],
 };
+
+// ─── AI RELEVANCE FILTER ───
+// Generalist sources that need AI keyword filtering (pure-player AI sites are trusted)
+export const GENERALIST_SOURCES = [
+  "Numerama", "Frandroid", "01net", "Les Numeriques", "L'Usine Digitale", "Siecle Digital",
+  "TechCrunch", "The Verge", "Ars Technica", "VentureBeat", "Wired",
+];
+
+// Keywords that an article must contain (title OR summary) to pass the AI filter
+export const AI_RELEVANCE_KEYWORDS = [
+  // Core AI terms
+  "ia", "ai", "intelligence artificielle", "artificial intelligence",
+  "machine learning", "deep learning", "apprentissage automatique",
+  "apprentissage profond", "reseau de neurones", "neural network",
+  // Models & LLMs
+  "llm", "gpt", "chatgpt", "openai", "claude", "anthropic", "gemini", "mistral",
+  "llama", "meta ai", "copilot", "perplexity", "deepseek",
+  "modele de langage", "language model", "transformer", "diffusion",
+  "stable diffusion", "midjourney", "dall-e", "sora", "generative",
+  // Agents & tools
+  "agent", "chatbot", "prompt", "fine-tuning", "fine-tune", "rag",
+  "retrieval augmented", "vector", "embedding", "tokeniz",
+  "langchain", "hugging face", "huggingface", "cursor", "devin",
+  // Research
+  "arxiv", "benchmark", "rlhf", "alignment", "reasoning", "multimodal",
+  // Business AI
+  "robot", "automat", "autonome", "autonomous",
+  "generat", "syntheti", "hallucin",
+];
 
 // Keywords that flag an article as high-impact
 export const IMPACT_KEYWORDS = [

@@ -27,12 +27,12 @@ export default function FlashCard({ article, index }: { article: Article; index:
             </div>
             <span className="text-xs text-muted-foreground">{formatDate(article.publishedAt)}</span>
           </div>
-          <h3 className="mb-3 text-lg font-bold leading-tight group-hover:text-accent transition-colors">{article.title}</h3>
+          <h3 className="mb-3 text-xl font-bold leading-tight group-hover:text-accent transition-colors">{article.title}</h3>
           <div className="mb-4 rounded-2xl bg-card-inner p-4">
             <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
               <Zap size={11} />Resume FR
             </div>
-            <p className="text-sm leading-relaxed text-muted-foreground">{displaySummary}</p>
+            <p className="text-[15px] leading-relaxed text-muted-foreground">{displaySummary}</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {article.isImpact && <Badge variant="impact"><Flame size={11} />Fort Impact</Badge>}

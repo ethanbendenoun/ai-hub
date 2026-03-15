@@ -149,6 +149,8 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans), -apple-system, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    line-height: 1.65;
   }
   html {
     @apply font-sans;

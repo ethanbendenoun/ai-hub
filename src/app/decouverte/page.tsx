@@ -24,7 +24,7 @@ export default function DecouvertePage() {
           </div>
           <h1 className="text-3xl font-extrabold">Decouverte</h1>
         </div>
-        <p className="text-muted">
+        <p className="text-muted-foreground">
           Apprenez a exploiter le plein potentiel des outils IA. Guides detailles,
           astuces pro, et conseils pour setup vos agents.
         </p>
@@ -63,8 +63,8 @@ export default function DecouvertePage() {
                 className="border-b border-card-border/50 transition-colors hover:bg-accent/5"
               >
                 <td className="px-4 py-3 font-medium">{guide.title}</td>
-                <td className="px-4 py-3 text-muted">{guide.category}</td>
-                <td className="px-4 py-3 text-muted">{guide.strengths[0]}</td>
+                <td className="px-4 py-3 text-muted-foreground">{guide.category}</td>
+                <td className="px-4 py-3 text-muted-foreground">{guide.strengths[0]}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${

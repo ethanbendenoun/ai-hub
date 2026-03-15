@@ -42,7 +42,7 @@ async function ProductGrid({ produit }: { produit?: string }) {
 
   if (articles.length === 0) {
     return (
-      <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted">
+      <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted-foreground">
         <Box size={40} className="mx-auto mb-4 text-accent" />
         <p className="text-lg font-medium">Aucune news produit pour le moment</p>
         <p className="mt-2 text-sm">
@@ -89,7 +89,7 @@ async function ProductGrid({ produit }: { produit?: string }) {
                 >
                   {article.source}
                 </span>
-                <span className="flex items-center gap-1 text-xs text-muted">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar size={12} />
                   {formatDate(article.publishedAt)}
                 </span>
@@ -97,14 +97,14 @@ async function ProductGrid({ produit }: { produit?: string }) {
               <h3 className="mb-2 text-base font-bold group-hover:text-accent">
                 {article.title}
               </h3>
-              <p className="text-sm leading-relaxed text-muted">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {article.summaryFr || article.summary}
               </p>
             </div>
 
             <ExternalLink
               size={16}
-              className="mt-1 shrink-0 text-muted opacity-0 transition-opacity group-hover:opacity-100"
+              className="mt-1 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
             />
           </a>
         ))}
@@ -138,14 +138,14 @@ async function ProductGrid({ produit }: { produit?: string }) {
                   >
                     {article.source}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {formatDate(article.publishedAt)}
                   </span>
                 </div>
                 <h3 className="mb-2 text-sm font-semibold leading-snug group-hover:text-accent">
                   {article.title}
                 </h3>
-                <p className="flex-1 text-xs leading-relaxed text-muted">
+                <p className="flex-1 text-xs leading-relaxed text-muted-foreground">
                   {article.summaryFr || article.summary}
                 </p>
                 {article.isImpact && (
@@ -183,7 +183,7 @@ export default async function ProduitsPage({
           </div>
           <h1 className="text-3xl font-extrabold">Produits IA</h1>
         </div>
-        <p className="text-muted">
+        <p className="text-muted-foreground">
           Les dernieres annonces et mises a jour directement depuis les blogs officiels
           de Claude, ChatGPT, Gemini, Perplexity, Cursor et l&apos;ecosysteme agents.
         </p>
@@ -204,7 +204,7 @@ export default async function ProduitsPage({
             <span className="text-2xl">{item.emoji}</span>
             <div>
               <p className="text-sm font-semibold">{item.name}</p>
-              <p className="text-xs text-muted">{item.desc}</p>
+              <p className="text-xs text-muted-foreground">{item.desc}</p>
             </div>
           </div>
         ))}

@@ -74,7 +74,7 @@ export default async function GuidePage({
       {/* Back link */}
       <Link
         href="/decouverte"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-muted hover:text-accent"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-accent"
       >
         <ArrowLeft size={14} />
         Retour aux guides
@@ -98,7 +98,7 @@ export default async function GuidePage({
             <p className="mb-1 text-sm font-medium text-accent">
               {guide.category}
             </p>
-            <p className="text-muted">{guide.description}</p>
+            <p className="text-muted-foreground">{guide.description}</p>
           </div>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default async function GuidePage({
             {guide.strengths.map((s, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm text-muted"
+                className="flex items-start gap-2 text-sm text-muted-foreground"
               >
                 <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-success" />
                 {s}
@@ -131,7 +131,7 @@ export default async function GuidePage({
             {guide.useCases.map((u, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm text-muted"
+                className="flex items-start gap-2 text-sm text-muted-foreground"
               >
                 <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-accent" />
                 {u}
@@ -158,7 +158,7 @@ export default async function GuidePage({
       </div>
 
       {/* Main content */}
-      <article className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-p:text-muted prose-p:leading-relaxed prose-strong:text-foreground prose-code:rounded prose-code:bg-card prose-code:px-1.5 prose-code:py-0.5 prose-code:text-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-card prose-pre:border prose-pre:border-card-border prose-li:text-muted prose-table:text-sm prose-th:text-left prose-th:font-semibold prose-td:py-2">
+      <article className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-p:text-muted-foreground prose-p:leading-relaxed prose-strong:text-foreground prose-code:rounded prose-code:bg-card prose-code:px-1.5 prose-code:py-0.5 prose-code:text-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-card prose-pre:border prose-pre:border-card-border prose-li:text-muted-foreground prose-table:text-sm prose-th:text-left prose-th:font-semibold prose-td:py-2">
         {/* Render content as HTML-like sections from markdown-style text */}
         {guide.content.split("\n").map((line, i) => {
           if (line.startsWith("## ")) {
@@ -194,7 +194,7 @@ export default async function GuidePage({
           }
           if (line.startsWith("- ")) {
             return (
-              <div key={i} className="flex items-start gap-2 my-1 text-sm text-muted">
+              <div key={i} className="flex items-start gap-2 my-1 text-sm text-muted-foreground">
                 <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-muted" />
                 <span>{line.replace("- ", "")}</span>
               </div>
@@ -206,7 +206,7 @@ export default async function GuidePage({
               return (
                 <div key={i} className="flex items-start gap-2 my-1 text-sm">
                   <span className="font-bold text-accent">{num[1]}.</span>
-                  <span className="text-muted">{num[2]}</span>
+                  <span className="text-muted-foreground">{num[2]}</span>
                 </div>
               );
             }
@@ -218,7 +218,7 @@ export default async function GuidePage({
             return (
               <div key={i} className="grid grid-cols-4 gap-2 text-xs border-b border-card-border py-1.5">
                 {cells.map((cell, j) => (
-                  <span key={j} className={j === 0 ? "font-medium" : "text-muted"}>
+                  <span key={j} className={j === 0 ? "font-medium" : "text-muted-foreground"}>
                     {cell}
                   </span>
                 ))}
@@ -228,7 +228,7 @@ export default async function GuidePage({
           if (line.trim() === "") return <div key={i} className="h-2" />;
           // Regular paragraph
           return (
-            <p key={i} className="my-2 text-sm leading-relaxed text-muted">
+            <p key={i} className="my-2 text-sm leading-relaxed text-muted-foreground">
               {line.split(/(\*\*.*?\*\*)/g).map((part, j) => {
                 if (part.startsWith("**") && part.endsWith("**")) {
                   return (
@@ -258,7 +258,7 @@ export default async function GuidePage({
       </article>
 
       {/* Updated date */}
-      <div className="mt-8 border-t border-card-border pt-4 text-xs text-muted">
+      <div className="mt-8 border-t border-card-border pt-4 text-xs text-muted-foreground">
         Derniere mise a jour : {guide.lastUpdated}
       </div>
     </div>

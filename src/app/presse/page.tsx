@@ -3,7 +3,7 @@ import { Newspaper, Globe, MapPin } from "lucide-react";
 import ArticleCard from "@/components/news/ArticleCard";
 import CategoryFilter from "@/components/news/CategoryFilter";
 import RegionTabs from "@/components/news/RegionTabs";
-import { getInternationalArticles, getFrenchArticles } from "@/lib/rss";
+import { getInternationalArticles, getFrenchArticles, getArticles } from "@/lib/rss";
 
 export const revalidate = 3600;
 
@@ -15,13 +15,19 @@ export const metadata = {
 async function ArticleGrid({
   region,
   categorie,
+  source,
 }: {
   region: string;
   categorie?: string;
+  source?: string;
 }) {
   let articles: Awaited<ReturnType<typeof getInternationalArticles>> = [];
   try {
-    if (region === "france") {
+    if (source) {
+      // When filtering by source, search across all regions
+      articles = await getArticles(categorie);
+      articles = articles.filter((a) => a.source === source);
+    } else if (region === "france") {
       articles = await getFrenchArticles(categorie);
     } else {
       articles = await getInternationalArticles(categorie);
@@ -37,7 +43,7 @@ async function ArticleGrid({
 
   if (articles.length === 0) {
     return (
-      <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted">
+      <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted-foreground">
         {isFrench ? (
           <MapPin size={40} className="mx-auto mb-4 text-accent" />
         ) : (
@@ -47,7 +53,7 @@ async function ArticleGrid({
         <p className="mt-2 text-sm">
           Sources surveillees : {sources}
         </p>
-        <p className="mt-1 text-xs text-muted/60">
+        <p className="mt-1 text-xs text-muted-foreground/60">
           Les flux RSS seront disponibles au prochain refresh.
         </p>
       </div>
@@ -56,7 +62,7 @@ async function ArticleGrid({
 
   return (
     <>
-      <div className="mb-4 flex items-center gap-2 text-sm text-muted">
+      <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
         {isFrench ? <MapPin size={14} /> : <Globe size={14} />}
         <span>{articles.length} articles depuis {sources}</span>
       </div>
@@ -72,11 +78,12 @@ async function ArticleGrid({
 export default async function PressePage({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string; categorie?: string }>;
+  searchParams: Promise<{ region?: string; categorie?: string; source?: string }>;
 }) {
   const params = await searchParams;
   const region = params?.region || "internationale";
   const categorie = params?.categorie;
+  const source = params?.source;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -87,8 +94,13 @@ export default async function PressePage({
             <Newspaper size={20} className="text-accent" />
           </div>
           <h1 className="text-3xl font-extrabold">Presse IA</h1>
+          {source && (
+            <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
+              Source : {source}
+            </span>
+          )}
         </div>
-        <p className="text-muted">
+        <p className="text-base text-muted-foreground">
           Toutes les actualites IA agregees en temps reel. Basculez entre presse
           internationale et francaise. Mis a jour toutes les heures.
         </p>
@@ -121,7 +133,7 @@ export default async function PressePage({
           </div>
         }
       >
-        <ArticleGrid region={region} categorie={categorie} />
+        <ArticleGrid region={region} categorie={categorie} source={source} />
       </Suspense>
     </div>
   );

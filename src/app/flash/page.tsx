@@ -38,9 +38,12 @@ async function FlashContent() {
         <Heart size={20} className="mt-0.5 shrink-0 text-accent" />
         <div>
           <p className="text-sm font-semibold">Personnalisez votre flux</p>
-          <p className="text-xs text-muted">
+          <p className="text-sm text-muted-foreground">
             Utilisez les boutons 👍/👎 sur les articles pour indiquer ce qui vous interesse.
             Avec le temps, votre flux deviendra de plus en plus pertinent.
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground/70">
+            Vos preferences sont sauvegardees dans votre navigateur (localStorage) et persistent entre les sessions.
           </p>
         </div>
       </div>
@@ -53,7 +56,7 @@ async function FlashContent() {
             <span className="text-sm font-semibold">Articles a impact</span>
           </div>
           <div className="text-3xl font-bold">{flashArticles.length}</div>
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-muted-foreground">
             Sur {allArticles.length} articles total — on garde que l&apos;essentiel
           </p>
         </div>
@@ -66,7 +69,7 @@ async function FlashContent() {
           <div className="text-3xl font-bold">
             {categoryStats[0]?.label || "N/A"}
           </div>
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-muted-foreground">
             {categoryStats[0]?.count || 0} articles
           </p>
         </div>
@@ -79,13 +82,13 @@ async function FlashContent() {
           <div className="text-3xl font-bold">
             {new Set(allArticles.map((a) => a.source)).size}
           </div>
-          <p className="mt-1 text-xs text-muted">Flux RSS surveilles (FR + International)</p>
+          <p className="mt-1 text-xs text-muted-foreground">Flux RSS surveilles (FR + International)</p>
         </div>
       </div>
 
       {/* Category distribution chart */}
       <div className="mb-10 rounded-xl border border-card-border bg-card p-6">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">
+        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Repartition par categorie
         </h3>
         <div className="space-y-3">
@@ -121,7 +124,7 @@ async function FlashContent() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted">
+        <div className="rounded-xl border border-card-border bg-card p-12 text-center text-muted-foreground">
           <Zap size={40} className="mx-auto mb-4 text-warning" />
           <p className="text-lg font-medium">Pas de Flash pour le moment</p>
           <p className="mt-2 text-sm">
@@ -144,7 +147,7 @@ export default function FlashPage() {
           </div>
           <h1 className="text-3xl font-extrabold">Flash IA</h1>
         </div>
-        <p className="text-muted">
+        <p className="text-base text-muted-foreground">
           Seulement les news a fort impact, resumees en francais. Pas de bruit, que l&apos;essentiel
           pour rester informe sans se surcharger.
         </p>

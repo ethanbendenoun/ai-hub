@@ -47,7 +47,7 @@ export default async function HomePage() {
               Tableau de bord <span className="gradient-text">IA</span>
             </h1>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Votre veille IA personnalisee — mis a jour toutes les heures
           </p>
         </div>
@@ -85,7 +85,7 @@ export default async function HomePage() {
             <Badge variant="accent">Live</Badge>
           </div>
           <div className="stat-number">{articles.length}</div>
-          <p className="mt-2 text-sm text-muted-foreground">Articles agreges</p>
+          <p className="mt-2 text-base text-muted-foreground">Articles agreges</p>
           <div className="mt-4 flex gap-4">
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full dot-accent" />
@@ -107,7 +107,7 @@ export default async function HomePage() {
             <Badge variant="impact">Hot</Badge>
           </div>
           <div className="stat-number">{impactArticles.length}</div>
-          <p className="mt-2 text-sm text-muted-foreground">A fort impact</p>
+          <p className="mt-2 text-base text-muted-foreground">A fort impact</p>
           <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-card-inner">
             <div className="h-full rounded-full bg-gradient-to-r from-warning to-orange-500 transition-all" style={{ width: `${articles.length > 0 ? Math.max(Math.round((impactArticles.length / articles.length) * 100), 5) : 0}%` }} />
           </div>
@@ -122,7 +122,7 @@ export default async function HomePage() {
             <Badge>Products</Badge>
           </div>
           <div className="stat-number">{productArticles.length}</div>
-          <p className="mt-2 text-sm text-muted-foreground">News produits</p>
+          <p className="mt-2 text-base text-muted-foreground">News produits</p>
           <div className="mt-4 flex gap-2">
             {["🟤", "🟢", "🔵", "🟣"].map((e, i) => (
               <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full bg-card-inner text-xs">{e}</span>
@@ -166,14 +166,14 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Bar chart with labels */}
-          <div className="flex items-end gap-4 h-36 mb-2">
+          {/* Bar chart with labels — clickable */}
+          <div className="flex items-end gap-4 h-40 mb-2">
             {catStats.map((cat, i) => (
-              <div key={cat.id} className="flex flex-1 flex-col items-center gap-2 group">
-                <span className="text-xs font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">{cat.count}</span>
-                <div className="w-full bar-purple transition-all group-hover:shadow-lg group-hover:shadow-accent/30" style={{ height: `${chartBars[i]}%` }} />
-                <span className="text-[10px] text-muted-foreground text-center leading-tight">{cat.label}</span>
-              </div>
+              <Link key={cat.id} href={`/presse?categorie=${cat.id}`} className="flex flex-1 flex-col items-center gap-2 group cursor-pointer">
+                <span className="text-sm font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">{cat.count}</span>
+                <div className="w-full bar-purple transition-all group-hover:shadow-lg group-hover:shadow-accent/30 group-hover:scale-x-110" style={{ height: `${chartBars[i]}%` }} />
+                <span className="text-sm text-muted-foreground text-center leading-tight group-hover:text-accent transition-colors">{cat.label}</span>
+              </Link>
             ))}
           </div>
 
@@ -196,11 +196,11 @@ export default async function HomePage() {
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-muted-foreground">Sources actives</h3>
             <div className="space-y-3">
               {topSources.map(([source, count], i) => (
-                <div key={source} className="flex items-center gap-3">
-                  <span className={`h-2 w-2 rounded-full ${i === 0 ? "dot-accent" : i === 1 ? "dot-live" : "dot-warning"}`} />
-                  <span className="flex-1 text-sm font-medium truncate">{source}</span>
-                  <span className="text-xs font-bold text-muted-foreground">{count}</span>
-                </div>
+                <Link key={source} href={`/presse?source=${encodeURIComponent(source)}`} className="flex items-center gap-3 group cursor-pointer rounded-lg px-2 py-1 -mx-2 hover:bg-card-inner transition-colors">
+                  <span className={`h-2.5 w-2.5 rounded-full ${i === 0 ? "dot-accent" : i === 1 ? "dot-live" : "dot-warning"}`} />
+                  <span className="flex-1 text-sm font-medium truncate group-hover:text-accent transition-colors">{source}</span>
+                  <span className="text-sm font-bold text-muted-foreground">{count}</span>
+                </Link>
               ))}
             </div>
           </div>
@@ -209,8 +209,11 @@ export default async function HomePage() {
           <div className="nixtio-card p-5" style={{ borderColor: "rgba(139,92,246,0.15)" }}>
             <Heart size={20} className="mb-3 text-accent" />
             <h3 className="mb-1 font-bold">Personnalisez</h3>
-            <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+            <p className="mb-2 text-sm leading-relaxed text-muted-foreground">
               Utilisez 👍 et 👎 sur chaque article pour affiner votre flux.
+            </p>
+            <p className="mb-3 text-xs leading-relaxed text-muted-foreground/70">
+              Vos preferences sont sauvegardees localement dans votre navigateur. Elles persistent entre les sessions.
             </p>
             <div className="flex gap-2">
               <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">👍 Plus</span>
@@ -229,8 +232,8 @@ export default async function HomePage() {
                 <Flame size={18} className="text-warning" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">A ne pas manquer</h2>
-                <p className="text-xs text-muted-foreground">Articles a fort impact cette semaine</p>
+                <h2 className="text-2xl font-bold">A ne pas manquer</h2>
+                <p className="text-sm text-muted-foreground">Articles a fort impact cette semaine</p>
               </div>
             </div>
             <Link href="/flash" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
@@ -252,8 +255,8 @@ export default async function HomePage() {
                 <Box size={18} className="text-blue-500" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">News Produits</h2>
-                <p className="text-xs text-muted-foreground">Directement des blogs officiels</p>
+                <h2 className="text-2xl font-bold">News Produits</h2>
+                <p className="text-sm text-muted-foreground">Directement des blogs officiels</p>
               </div>
             </div>
             <Link href="/produits" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
@@ -274,8 +277,8 @@ export default async function HomePage() {
               <Sparkles size={18} className="text-accent" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Dernieres actualites</h2>
-              <p className="text-xs text-muted-foreground">Flux agrege en temps reel</p>
+              <h2 className="text-2xl font-bold">Dernieres actualites</h2>
+              <p className="text-sm text-muted-foreground">Flux agrege en temps reel</p>
             </div>
           </div>
           <Link href="/presse" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
@@ -305,8 +308,8 @@ export default async function HomePage() {
               <TrendingUp size={18} className="text-success" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Guides &amp; Outils IA</h2>
-              <p className="text-xs text-muted-foreground">Maitrisez les outils qui comptent</p>
+              <h2 className="text-2xl font-bold">Guides &amp; Outils IA</h2>
+              <p className="text-sm text-muted-foreground">Maitrisez les outils qui comptent</p>
             </div>
           </div>
           <Link href="/decouverte" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
