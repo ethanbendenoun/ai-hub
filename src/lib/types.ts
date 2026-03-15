@@ -28,6 +28,17 @@ export interface FlashItem {
   slug: string;
 }
 
+export interface Video {
+  id: string;
+  title: string;
+  channel: string;
+  channelIcon: string;
+  description: string;
+  duration: string;
+  publishedAt: string;
+  tags: string[];
+}
+
 export interface Guide {
   slug: string;
   title: string;

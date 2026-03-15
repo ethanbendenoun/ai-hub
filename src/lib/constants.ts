@@ -290,8 +290,75 @@ export const IMPACT_KEYWORDS = [
 
 export const NAV_LINKS = [
   { href: "/", label: "Accueil" },
-  { href: "/presse", label: "Presse IA" },
-  { href: "/flash", label: "Flash IA" },
-  { href: "/produits", label: "Produits IA" },
-  { href: "/decouverte", label: "Decouverte" },
+  { href: "/flash", label: "Flash" },
+  { href: "/produits", label: "Produits" },
+  { href: "/videos", label: "Videos" },
+  { href: "/decouverte", label: "Guides" },
+];
+
+// ─── CURATED VIDEOS ───
+// Hand-picked educational AI content from YouTube
+import type { Video } from "./types";
+
+export const CURATED_VIDEOS: Video[] = [
+  {
+    id: "5EwqKKpLNB0",
+    title: "OpenClaw : L'agent IA qui code pour vous",
+    channel: "Hasheur",
+    channelIcon: "H",
+    description: "Decouverte d'OpenClaw, la plateforme chinoise qui permet de creer des entreprises 'one-person' grace aux agents IA. Analyse complete du phenomene.",
+    duration: "18:32",
+    publishedAt: "2026-03-14",
+    tags: ["Agents IA", "OpenClaw", "Automatisation"],
+  },
+  {
+    id: "jV1MKFOX6wQ",
+    title: "Claude Code : le meilleur agent de dev ?",
+    channel: "Underscore_",
+    channelIcon: "U",
+    description: "Test complet de Claude Code, l'agent de developpement d'Anthropic. Terminal, MCP, skills customs — tout ce qu'il faut savoir pour coder 10x plus vite.",
+    duration: "24:15",
+    publishedAt: "2026-03-12",
+    tags: ["Claude Code", "Dev", "Agents IA"],
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Mistral AI : La France dans la course aux LLMs",
+    channel: "Mistral AI",
+    channelIcon: "M",
+    description: "Conference officielle de Mistral AI sur leur vision des modeles de langage, l'open source et la souverainete europeenne en IA.",
+    duration: "45:20",
+    publishedAt: "2026-03-10",
+    tags: ["Mistral", "LLMs", "Conference"],
+  },
+  {
+    id: "aircAruvnKk",
+    title: "Perplexity Computer : naviguer le web avec l'IA",
+    channel: "Fireship",
+    channelIcon: "F",
+    description: "Perplexity lance 'Computer', un agent qui controle votre navigateur. Demo, limites et comparaison avec les autres agents web.",
+    duration: "12:08",
+    publishedAt: "2026-03-08",
+    tags: ["Perplexity", "Agent Web", "Automatisation"],
+  },
+  {
+    id: "8pDqJVdNa44",
+    title: "Creer une armee d'agents IA sur Mac Mini",
+    channel: "AI Jason",
+    channelIcon: "AJ",
+    description: "Comment deployer plusieurs agents IA en parallele sur un Mac Mini M4. Architecture, orchestration et cas d'usage concrets.",
+    duration: "31:45",
+    publishedAt: "2026-03-06",
+    tags: ["Agents IA", "Infrastructure", "Mac Mini"],
+  },
+  {
+    id: "L_Guz73e6fw",
+    title: "GPT-5 vs Claude Opus 4 : le grand comparatif",
+    channel: "Two Minute Papers",
+    channelIcon: "2M",
+    description: "Benchmark detaille des deux modeles les plus puissants du marche. Raisonnement, code, creativite — quel modele choisir ?",
+    duration: "15:30",
+    publishedAt: "2026-03-04",
+    tags: ["LLMs", "Benchmark", "Comparatif"],
+  },
 ];

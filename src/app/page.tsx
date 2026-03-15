@@ -1,371 +1,254 @@
 import Link from "next/link";
-import { Zap, Newspaper, BookOpen, ArrowRight, Flame, Bot, Sparkles, TrendingUp, Box, Heart, BarChart3, Activity, Globe, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Zap, ArrowRight, Flame, BookOpen, Play, Clock, ExternalLink, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import ArticleCard from "@/components/news/ArticleCard";
-import GuideCard from "@/components/guides/GuideCard";
+import VideoCard from "@/components/videos/VideoCard";
 import { getArticles, getProductArticles } from "@/lib/rss";
 import { getAllGuides } from "@/lib/guides";
-import { CATEGORIES } from "@/lib/constants";
+import { CURATED_VIDEOS, CATEGORIES } from "@/lib/constants";
 
 export const revalidate = 3600;
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffHours < 1) return "A l'instant";
+  if (diffHours < 24) return `il y a ${diffHours}h`;
+  if (diffDays < 7) return `il y a ${diffDays}j`;
+  return new Date(dateStr).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+}
 
 export default async function HomePage() {
   let articles: Awaited<ReturnType<typeof getArticles>> = [];
   let productArticles: Awaited<ReturnType<typeof getProductArticles>> = [];
   try { articles = await getArticles(); productArticles = await getProductArticles(); } catch { articles = []; productArticles = []; }
   const guides = getAllGuides();
-  const impactArticles = articles.filter((a) => a.isImpact).slice(0, 3);
-  const latestArticles = articles.slice(0, 6);
-  const frenchCount = articles.filter((a) => a.region === "france").length;
-  const intlCount = articles.filter((a) => a.region === "international").length;
-
-  const catStats = CATEGORIES.filter((c) => c.id !== "all")
-    .map((cat) => ({ ...cat, count: articles.filter((a) => a.categories.includes(cat.id)).length }))
-    .sort((a, b) => b.count - a.count).slice(0, 6);
-  const maxCat = Math.max(...catStats.map((c) => c.count), 1);
-  const chartBars = catStats.map((c) => Math.max(Math.round((c.count / maxCat) * 100), 8));
-
-  // Source stats
-  const sourceMap = new Map<string, number>();
-  articles.forEach((a) => sourceMap.set(a.source, (sourceMap.get(a.source) || 0) + 1));
-  const topSources = [...sourceMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-
-  // Product breakdown for Products card
-  const productMap = new Map<string, number>();
-  productArticles.forEach((a) => { if (a.product) productMap.set(a.product, (productMap.get(a.product) || 0) + 1); });
-  const topProducts = [...productMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
-
-  // Top intl and FR sources for Articles card
-  const intlSources = new Map<string, number>();
-  const frSources = new Map<string, number>();
-  articles.forEach((a) => {
-    if (a.region === "international") intlSources.set(a.source, (intlSources.get(a.source) || 0) + 1);
-    if (a.region === "france") frSources.set(a.source, (frSources.get(a.source) || 0) + 1);
-  });
-  const topIntlSource = [...intlSources.entries()].sort((a, b) => b[1] - a[1])[0];
-  const topFrSource = [...frSources.entries()].sort((a, b) => b[1] - a[1])[0];
+  const impactArticles = articles.filter((a) => a.isImpact).slice(0, 5);
+  const latestArticles = articles.slice(0, 8);
+  const featured = impactArticles[0] || latestArticles[0];
+  const sideArticles = (impactArticles.length > 1 ? impactArticles.slice(1, 4) : latestArticles.slice(1, 4));
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-8">
+    <div className="mx-auto max-w-[1100px] px-6 py-10">
 
-      {/* ═══ HEADER: Nixtio style ═══ */}
-      <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <div className="mb-2 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent/10 glow-ring">
-              <Activity size={20} className="text-accent" />
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Tableau de bord <span className="gradient-text">IA</span>
-            </h1>
-          </div>
-          <p className="text-base text-muted-foreground">
-            Votre veille IA personnalisee — mis a jour toutes les heures
-          </p>
-        </div>
+      {/* ═══ MASTHEAD ═══ */}
+      <header className="mb-12 text-center">
+        <p className="section-label mb-3">Newsletter educative</p>
+        <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
+          AI <span className="gradient-text">Hub</span>
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground leading-relaxed">
+          L&apos;essentiel de l&apos;IA, commente et synthetise. Maitrisez les modeles, les agents et les outils qui comptent.
+        </p>
+      </header>
 
-        {/* Nixtio top-right pill bar */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-full bg-card border border-card-border px-4 py-2 shadow-sm">
-            <span className="pulse-dot h-2 w-2 rounded-full dot-live" />
-            <span className="text-sm font-semibold">{articles.length}</span>
-            <span className="text-xs text-muted-foreground">articles</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-full bg-card border border-card-border px-4 py-2 shadow-sm">
-            <span className="h-2 w-2 rounded-full dot-warning" />
-            <span className="text-sm font-semibold">{impactArticles.length}</span>
-            <span className="text-xs text-muted-foreground">impacts</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 rounded-full bg-card border border-card-border px-4 py-2 shadow-sm">
-            <Globe size={12} className="text-accent" />
-            <span className="text-sm font-semibold">{intlCount}</span>
-            <Separator orientation="vertical" className="h-3" />
-            <MapPin size={12} className="text-accent" />
-            <span className="text-sm font-semibold">{frenchCount}</span>
-          </div>
-        </div>
-      </div>
+      <div className="section-divider" />
 
-      {/* ═══ STATS GRID (Nixtio 4-card layout) ═══ */}
-      <div className="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Articles card */}
-        <Link href="/presse" className="nixtio-card card-hover p-6 block">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/10">
-              <Newspaper size={20} className="text-accent" />
-            </div>
-            <Badge variant="accent">Live</Badge>
-          </div>
-          <div className="stat-number">{articles.length}</div>
-          <p className="mt-1 text-base text-muted-foreground">Articles agreges</p>
-          <Separator className="my-3" />
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Globe size={12} className="text-accent" />
-                <span className="text-sm text-muted-foreground">International</span>
-              </div>
-              <span className="text-sm font-semibold">{intlCount}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <MapPin size={12} className="text-success" />
-                <span className="text-sm text-muted-foreground">France</span>
-              </div>
-              <span className="text-sm font-semibold">{frenchCount}</span>
-            </div>
-          </div>
-          {topIntlSource && (
-            <div className="mt-3 rounded-xl bg-card-inner px-3 py-2">
-              <span className="text-xs text-muted-foreground">Top source : </span>
-              <span className="text-xs font-semibold">{topIntlSource[0]}</span>
-              <span className="text-xs text-muted-foreground"> ({topIntlSource[1]})</span>
-            </div>
-          )}
-        </Link>
-
-        {/* Impact card */}
-        <Link href="/flash" className="nixtio-card card-hover p-6 block">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-warning/10">
+      {/* ═══ A LA UNE — Featured + sidebar ═══ */}
+      {featured && (
+        <section className="mb-4">
+          <div className="mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <Flame size={20} className="text-warning" />
+              <h2 className="text-2xl font-bold">A la une</h2>
             </div>
-            <Badge variant="impact">Hot</Badge>
+            <Link href="/flash" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
+              Tous les flash <ArrowRight size={14} />
+            </Link>
           </div>
-          <div className="stat-number">{impactArticles.length}</div>
-          <p className="mt-1 text-base text-muted-foreground">A fort impact</p>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-card-inner">
-            <div className="h-full rounded-full bg-gradient-to-r from-warning to-orange-500 transition-all" style={{ width: `${articles.length > 0 ? Math.max(Math.round((impactArticles.length / articles.length) * 100), 5) : 0}%` }} />
-          </div>
-          <Separator className="my-3" />
-          <div className="space-y-1.5">
-            {impactArticles.slice(0, 2).map((a, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <Zap size={10} className="mt-1 shrink-0 text-warning" />
-                <span className="text-xs text-muted-foreground line-clamp-1">{a.title}</span>
+
+          <div className="grid gap-6 lg:grid-cols-5">
+            {/* Featured article — large */}
+            <a href={featured.url} target="_blank" rel="noopener noreferrer" className="editorial-card lg:col-span-3 group block overflow-hidden">
+              {featured.imageUrl && (
+                <div className="aspect-[16/9] overflow-hidden rounded-t-2xl bg-card-inner">
+                  <img src={featured.imageUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                </div>
+              )}
+              <div className="p-6 lg:p-8">
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: featured.sourceColor }}>{featured.sourceIcon}</span>
+                  <span className="text-sm font-medium">{featured.source}</span>
+                  <span className="text-sm text-muted-foreground">· {timeAgo(featured.publishedAt)}</span>
+                  {featured.isImpact && <Badge variant="impact"><Flame size={11} />Impact</Badge>}
+                </div>
+                <h3 className="mb-4 text-2xl font-bold leading-tight group-hover:text-accent transition-colors lg:text-3xl">
+                  {featured.title}
+                </h3>
+                <p className="mb-5 text-base leading-relaxed text-muted-foreground lg:text-lg">
+                  {featured.summary}
+                </p>
+                {featured.summaryFr && (
+                  <div className="ai-commentary">
+                    <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
+                      <Sparkles size={12} /> Analyse IA
+                    </div>
+                    <p className="text-[15px] leading-relaxed text-muted-foreground">{featured.summaryFr}</p>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        </Link>
+            </a>
 
-        {/* Products card */}
-        <Link href="/produits" className="nixtio-card card-hover p-6 block">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10">
-              <Box size={20} className="text-blue-500" />
-            </div>
-            <Badge>Produits</Badge>
-          </div>
-          <div className="stat-number">{productArticles.length}</div>
-          <p className="mt-1 text-base text-muted-foreground">News produits</p>
-          <Separator className="my-3" />
-          <div className="space-y-2">
-            {topProducts.map(([name, count]) => (
-              <div key={name} className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground truncate">{name}</span>
-                <span className="ml-2 shrink-0 text-xs font-semibold text-muted-foreground">{count}</span>
-              </div>
-            ))}
-          </div>
-        </Link>
-
-        {/* Gradient card (Nixtio +278k style) */}
-        <Link href="/decouverte" className="gradient-card rounded-[20px] p-6 flex flex-col justify-between card-hover block">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15">
-              <BookOpen size={20} />
-            </div>
-            <span className="text-xs font-semibold opacity-80">Guides</span>
-          </div>
-          <div>
-            <div className="stat-number">{guides.length}</div>
-            <p className="mt-1 text-sm opacity-80">Guides &amp; tutos</p>
-          </div>
-          <Separator className="my-3 opacity-20" />
-          <div className="space-y-1.5">
-            {guides.slice(0, 3).map((g) => (
-              <div key={g.slug} className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-white/15 text-[10px] font-bold">{g.title.charAt(0)}</span>
-                <span className="text-xs opacity-90 truncate">{g.title}</span>
-              </div>
-            ))}
-            {guides.length > 3 && (
-              <span className="text-xs opacity-60">+{guides.length - 3} autres guides</span>
-            )}
-          </div>
-        </Link>
-      </div>
-
-      {/* ═══ CHART + SIDEBAR (Nixtio 2/3 + 1/3 layout) ═══ */}
-      <div className="mb-10 grid gap-5 lg:grid-cols-3">
-        {/* Chart card (Nixtio style) */}
-        <div className="nixtio-card p-6 lg:col-span-2">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BarChart3 size={18} className="text-accent" />
-              <h3 className="font-bold">Repartition par categorie</h3>
-            </div>
-            <div className="flex items-center gap-1 rounded-full bg-card-inner p-1">
-              <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-accent/25">Categories</span>
-              <span className="rounded-full px-3 py-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">Sources</span>
-            </div>
-          </div>
-
-          {/* Bar chart with labels — clickable */}
-          <div className="flex items-end gap-4 h-40 mb-2">
-            {catStats.map((cat, i) => (
-              <Link key={cat.id} href={`/presse?categorie=${cat.id}`} className="flex flex-1 flex-col items-center gap-2 group cursor-pointer">
-                <span className="text-sm font-bold text-accent opacity-0 group-hover:opacity-100 transition-opacity">{cat.count}</span>
-                <div className="w-full bar-purple transition-all group-hover:shadow-lg group-hover:shadow-accent/30 group-hover:scale-x-110" style={{ height: `${chartBars[i]}%` }} />
-                <span className="text-sm text-muted-foreground text-center leading-tight group-hover:text-accent transition-colors">{cat.label}</span>
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full dot-accent" />
-              <span>Categories detectees</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="h-0.5 w-4 border-t border-dashed border-warning" />
-              <span>Tendance impact</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right sidebar cards */}
-        <div className="flex flex-col gap-5">
-          {/* Top sources */}
-          <div className="nixtio-card p-5 flex-1">
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-muted-foreground">Sources actives</h3>
-            <div className="space-y-3">
-              {topSources.map(([source, count], i) => (
-                <Link key={source} href={`/presse?source=${encodeURIComponent(source)}`} className="flex items-center gap-3 group cursor-pointer rounded-lg px-2 py-1 -mx-2 hover:bg-card-inner transition-colors">
-                  <span className={`h-2.5 w-2.5 rounded-full ${i === 0 ? "dot-accent" : i === 1 ? "dot-live" : "dot-warning"}`} />
-                  <span className="flex-1 text-sm font-medium truncate group-hover:text-accent transition-colors">{source}</span>
-                  <span className="text-sm font-bold text-muted-foreground">{count}</span>
-                </Link>
+            {/* Side articles */}
+            <div className="flex flex-col gap-4 lg:col-span-2">
+              {sideArticles.map((a) => (
+                <a key={a.slug} href={a.url} target="_blank" rel="noopener noreferrer" className="editorial-card group flex flex-col p-5">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold text-white" style={{ backgroundColor: a.sourceColor }}>{a.sourceIcon}</span>
+                    <span className="text-sm text-muted-foreground">{a.source}</span>
+                    <span className="ml-auto text-xs text-muted-foreground">{timeAgo(a.publishedAt)}</span>
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold leading-snug group-hover:text-accent transition-colors">
+                    {a.title}
+                  </h3>
+                  <p className="text-[15px] leading-relaxed text-muted-foreground line-clamp-2">{a.summary}</p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {a.isImpact && <Badge variant="impact"><Flame size={10} />Impact</Badge>}
+                    {a.categories.slice(0, 2).map((catId) => {
+                      const cat = CATEGORIES.find((c) => c.id === catId);
+                      return cat ? <Badge key={catId} variant="accent">{cat.label}</Badge> : null;
+                    })}
+                  </div>
+                </a>
               ))}
             </div>
           </div>
-
-          {/* Personalization */}
-          <div className="nixtio-card p-5" style={{ borderColor: "rgba(139,92,246,0.15)" }}>
-            <Heart size={20} className="mb-3 text-accent" />
-            <h3 className="mb-1 font-bold">Personnalisez</h3>
-            <p className="mb-2 text-sm leading-relaxed text-muted-foreground">
-              Utilisez 👍 et 👎 sur chaque article pour affiner votre flux.
-            </p>
-            <p className="mb-3 text-xs leading-relaxed text-muted-foreground/70">
-              Vos preferences sont sauvegardees localement dans votre navigateur. Elles persistent entre les sessions.
-            </p>
-            <div className="flex gap-2">
-              <span className="rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">👍 Plus</span>
-              <span className="rounded-full bg-danger/10 px-3 py-1 text-xs font-semibold text-danger">👎 Moins</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══ IMPACT ═══ */}
-      {impactArticles.length > 0 && (
-        <section className="mb-10">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning/10 glow-ring">
-                <Flame size={18} className="text-warning" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">A ne pas manquer</h2>
-                <p className="text-sm text-muted-foreground">Articles a fort impact cette semaine</p>
-              </div>
-            </div>
-            <Link href="/flash" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
-              Flash IA <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {impactArticles.map((a) => <ArticleCard key={a.slug} article={a} />)}
-          </div>
         </section>
       )}
 
-      {/* ═══ PRODUCTS ═══ */}
-      {productArticles.length > 0 && (
-        <section className="mb-10">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/10 glow-ring">
-                <Box size={18} className="text-blue-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">News Produits</h2>
-                <p className="text-sm text-muted-foreground">Directement des blogs officiels</p>
-              </div>
-            </div>
-            <Link href="/produits" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
-              Tout voir <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {productArticles.slice(0, 3).map((a) => <ArticleCard key={a.slug} article={a} />)}
-          </div>
-        </section>
-      )}
+      <div className="section-divider" />
 
-      {/* ═══ LATEST ═══ */}
-      <section className="mb-10">
-        <div className="mb-6 flex items-center justify-between">
+      {/* ═══ VIDEOS — Canvas podcast section style ═══ */}
+      <section className="mb-4">
+        <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent/10 glow-ring">
-              <Sparkles size={18} className="text-accent" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold">Dernieres actualites</h2>
-              <p className="text-sm text-muted-foreground">Flux agrege en temps reel</p>
-            </div>
+            <Play size={20} className="text-accent" />
+            <h2 className="text-2xl font-bold">Videos a voir</h2>
           </div>
-          <Link href="/presse" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
+          <Link href="/videos" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
+            Toutes les videos <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {CURATED_VIDEOS.slice(0, 3).map((v) => (
+            <VideoCard key={v.id} video={v} />
+          ))}
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ═══ DERNIERES ACTUS — editorial list ═══ */}
+      <section className="mb-4">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Zap size={20} className="text-accent" />
+            <h2 className="text-2xl font-bold">Fil d&apos;actualites</h2>
+          </div>
+          <Link href="/presse" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
             Toute la presse <ArrowRight size={14} />
           </Link>
         </div>
-        {latestArticles.length > 0 ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {latestArticles.map((a) => <ArticleCard key={a.slug} article={a} />)}
-          </div>
-        ) : (
-          <Card className="p-12 text-center">
-            <CardContent className="p-0">
-              <Bot size={40} className="mx-auto mb-4 text-muted-foreground/30" />
-              <p className="text-lg font-semibold">Chargement des flux...</p>
-              <p className="mt-2 text-sm text-muted-foreground">Les donnees seront disponibles au prochain refresh.</p>
-            </CardContent>
-          </Card>
-        )}
+
+        <div className="space-y-0">
+          {latestArticles.slice(0, 6).map((a) => (
+            <a key={a.slug} href={a.url} target="_blank" rel="noopener noreferrer" className="flash-item group flex gap-5 items-start">
+              <div className="flex-1 min-w-0">
+                <div className="mb-1.5 flex items-center gap-2 flex-wrap">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold text-white" style={{ backgroundColor: a.sourceColor }}>{a.sourceIcon}</span>
+                  <span className="text-sm font-medium">{a.source}</span>
+                  {a.region === "france" && <span className="text-xs">FR</span>}
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock size={11} />{timeAgo(a.publishedAt)}
+                  </span>
+                  {a.isImpact && <Badge variant="impact"><Flame size={10} />Impact</Badge>}
+                </div>
+                <h3 className="mb-1.5 text-xl font-bold leading-snug group-hover:text-accent transition-colors">
+                  {a.title}
+                </h3>
+                <p className="text-base leading-relaxed text-muted-foreground line-clamp-2">{a.summary}</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {a.categories.slice(0, 3).map((catId) => {
+                    const cat = CATEGORIES.find((c) => c.id === catId);
+                    return cat ? <Badge key={catId} variant="accent">{cat.label}</Badge> : null;
+                  })}
+                </div>
+              </div>
+              <ExternalLink size={16} className="mt-2 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+          ))}
+        </div>
       </section>
 
-      {/* ═══ GUIDES ═══ */}
-      <section className="mb-10">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-success/10 glow-ring">
-              <TrendingUp size={18} className="text-success" />
+      <div className="section-divider" />
+
+      {/* ═══ PRODUITS IA — product news ═══ */}
+      {productArticles.length > 0 && (
+        <section className="mb-4">
+          <div className="mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles size={20} className="text-blue-500" />
+              <h2 className="text-2xl font-bold">News Produits</h2>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold">Guides &amp; Outils IA</h2>
-              <p className="text-sm text-muted-foreground">Maitrisez les outils qui comptent</p>
-            </div>
+            <Link href="/produits" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
+              Tout voir <ArrowRight size={14} />
+            </Link>
           </div>
-          <Link href="/decouverte" className="flex items-center gap-1.5 rounded-full border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-accent/30 hover:text-accent transition-all">
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {productArticles.slice(0, 3).map((a) => (
+              <a key={a.slug} href={a.url} target="_blank" rel="noopener noreferrer" className="editorial-card group p-5 block">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: a.sourceColor }}>{a.sourceIcon}</span>
+                  <div>
+                    <span className="text-sm font-medium">{a.source}</span>
+                    {a.product && <span className="ml-2 text-xs text-muted-foreground">· {a.product}</span>}
+                  </div>
+                </div>
+                <h3 className="mb-2 text-lg font-bold leading-snug group-hover:text-accent transition-colors">{a.title}</h3>
+                <p className="text-[15px] leading-relaxed text-muted-foreground line-clamp-3">{a.summary}</p>
+              </a>
+            ))}
+          </div>
+
+          <div className="section-divider" />
+        </section>
+      )}
+
+      {/* ═══ GUIDES — Canvas table of contents style ═══ */}
+      <section className="mb-4">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BookOpen size={20} className="text-success" />
+            <h2 className="text-2xl font-bold">Guides &amp; Tutoriels</h2>
+          </div>
+          <Link href="/decouverte" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline">
             Tous les guides <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {guides.slice(0, 6).map((g) => <GuideCard key={g.slug} guide={g} />)}
+
+        <div className="editorial-card overflow-hidden">
+          {guides.slice(0, 6).map((g, i) => (
+            <Link key={g.slug} href={`/decouverte/${g.slug}`} className="group flex items-center gap-5 border-b border-card-border px-6 py-5 last:border-b-0 hover:bg-card-inner transition-colors">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-sm font-bold text-accent">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold group-hover:text-accent transition-colors">{g.title}</h3>
+                <p className="text-[15px] text-muted-foreground truncate">{g.description}</p>
+              </div>
+              <div className="hidden items-center gap-2 sm:flex">
+                <Badge variant={g.difficulty === "debutant" ? "success" : g.difficulty === "intermediaire" ? "accent" : "impact"}>
+                  {g.difficulty}
+                </Badge>
+                <ArrowRight size={16} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
     </div>
