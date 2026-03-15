@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   likeArticle,
   dislikeArticle,
@@ -48,28 +50,34 @@ export default function LikeButtons({ url, categories, source }: LikeButtonsProp
 
   return (
     <div className="flex items-center gap-1">
-      <button
+      <Button
+        variant="ghost"
+        size="icon-xs"
         onClick={handleLike}
-        className={`rounded-lg p-1.5 transition-all ${
+        className={cn(
+          "rounded-lg",
           status === "liked"
             ? "bg-green-500/20 text-green-500 scale-110"
-            : "text-muted/50 hover:text-green-500 hover:bg-green-500/10"
-        }`}
+            : "text-muted-foreground/50 hover:text-green-500 hover:bg-green-500/10"
+        )}
         title="J'aime ce type de contenu"
       >
         <ThumbsUp size={14} />
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon-xs"
         onClick={handleDislike}
-        className={`rounded-lg p-1.5 transition-all ${
+        className={cn(
+          "rounded-lg",
           status === "disliked"
             ? "bg-red-500/20 text-red-500 scale-110"
-            : "text-muted/50 hover:text-red-500 hover:bg-red-500/10"
-        }`}
+            : "text-muted-foreground/50 hover:text-red-500 hover:bg-red-500/10"
+        )}
         title="Moins de ce contenu"
       >
         <ThumbsDown size={14} />
-      </button>
+      </Button>
     </div>
   );
 }

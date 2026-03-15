@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Box, Zap, Calendar, ExternalLink } from "lucide-react";
 import { getProductArticles } from "@/lib/rss";
 import ProductFilter from "@/components/news/ProductFilter";
-import Badge from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/badge";
 
 export const revalidate = 3600;
 

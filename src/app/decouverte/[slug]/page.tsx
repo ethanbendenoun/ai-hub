@@ -13,7 +13,7 @@ import {
   Lightbulb,
   Target,
 } from "lucide-react";
-import Badge from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/badge";
 import { getGuideBySlug, getAllGuides } from "@/lib/guides";
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -91,7 +91,7 @@ export default async function GuidePage({
               <h1 className="text-2xl font-extrabold sm:text-3xl">
                 {guide.title}
               </h1>
-              <Badge variant={diffVariant} size="md">
+              <Badge variant={diffVariant} className="px-3 py-1 text-sm">
                 {diffLabel}
               </Badge>
             </div>

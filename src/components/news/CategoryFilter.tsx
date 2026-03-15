@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { CATEGORIES } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Layers,
   Bot,
@@ -42,18 +44,19 @@ export default function CategoryFilter() {
       {CATEGORIES.map((cat) => {
         const isActive = current === cat.id;
         return (
-          <button
+          <Button
             key={cat.id}
+            variant={isActive ? "default" : "outline"}
+            size="sm"
             onClick={() => handleFilter(cat.id)}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all ${
-              isActive
-                ? "bg-accent text-white shadow-lg shadow-accent/25"
-                : "bg-card border border-card-border text-muted hover:border-accent/30 hover:text-foreground"
-            }`}
+            className={cn(
+              "rounded-full gap-1.5",
+              isActive && "shadow-lg shadow-accent/25"
+            )}
           >
             {iconMap[cat.icon]}
             {cat.label}
-          </button>
+          </Button>
         );
       })}
     </div>
